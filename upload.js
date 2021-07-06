@@ -64,7 +64,7 @@ function shoot() {
     snapshots.unshift(canvas);
     output.innerHTML = '';
     for (var i = 0; i < 10; i++) {
-        output.appendChild(snapshots[i]);
+        output.append(snapshots[i]);
     }
 }
 
