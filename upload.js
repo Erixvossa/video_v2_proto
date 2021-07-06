@@ -63,9 +63,9 @@ function shoot() {
     };
     snapshots.unshift(canvas);
     output.innerHTML = '';
-    for (var i = 0; i < 10; i++) {
-        output.append(snapshots[i]);
-    }
+    snapshots.forEach((snapshot) => {
+        output.append(snapshot)
+    })
 }
 
 captureButton.addEventListener('click', (e) => {
