@@ -76,15 +76,14 @@ captureButton.addEventListener('click', (e) => {
 let screens = {};
 
 video.addEventListener('loadeddata', () => {
-    console.log('video is load');
-    console.log(video.duration)
-    let d = video.duration;
-    console.log(d);
-    shoot();
-    for (let i = 0; i < d; i++) {
-        console.log(i);
-        //video.currentTime = i;
-        //shoot();
-    }
+        const shootInterval = () => {
+            shoot()
+            video.currentTime += 0.25;
+            if (video.currentTime == video.duration) {
+                clearInterval(interval)
+            }
+        }
+
+        const interval = setInterval(shootInterval, 100);
 })
 
