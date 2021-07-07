@@ -71,10 +71,20 @@ function shoot() {
 captureButton.addEventListener('click', (e) => {
     e.preventDefault();
     shoot();
-
 })
 
-// (function() {
-//     var captureit = document.getElementById('cit');
-//     captureit.click();
-// })();
+let screens = {};
+
+video.addEventListener('loadeddata', () => {
+    console.log('video is load');
+    console.log(video.duration)
+    let d = video.duration;
+    console.log(d);
+    shoot();
+    for (let i = 0; i < d; i++) {
+        console.log(i);
+        //video.currentTime = i;
+        //shoot();
+    }
+})
+
