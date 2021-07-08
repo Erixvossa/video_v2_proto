@@ -26,6 +26,10 @@ input.addEventListener('change', function() {
 var videoId = 'video';
 var scaleFactor = 0.25;
 var snapshots = [];
+let videoTimeArr = [];
+let sceneArr = {};
+
+
 
 const captureButton = document.querySelector('#cit');
 
@@ -54,7 +58,8 @@ function capture(video, scaleFactor) {
 /**
  * Invokes the <code>capture</code> function and attaches the canvas element to the DOM.
  */
-function shoot() {
+function shoot(videoCurrentTime) {
+    //console.log(videoCurrentTime);
     var video = document.getElementById(videoId);
     var output = document.getElementById('output');
     var canvas = capture(video, scaleFactor);
@@ -63,9 +68,34 @@ function shoot() {
     };
     snapshots.unshift(canvas);
     output.innerHTML = '';
-    snapshots.forEach((snapshot) => {
-        output.append(snapshot)
+
+    let scene = {};
+    scene.canvas = canvas;
+    scene.time = videoCurrentTime;
+
+
+    videoTimeArr.unshift(scene);
+    console.log(videoTimeArr);
+
+    videoTimeArr.forEach((scene) => {
+        const div = document.createElement('div');
+        div.append(scene.canvas)
+        div.setAttribute('time', scene.time);
+        output.prepend(div);
     })
+
+
+    // snapshots.forEach((snapshot) => {
+    //     const div = document.createElement('div');
+    //     div.append(snapshot)
+    //     output.append(div);
+    //
+    //
+    //
+    //     //div.setAttribute('time', videoCurrentTime);
+    // })
+
+
 }
 
 captureButton.addEventListener('click', (e) => {
@@ -77,9 +107,10 @@ let screens = {};
 
 video.addEventListener('loadeddata', () => {
         const shootInterval = () => {
-            shoot()
+            const videoCurrentTime = video.currentTime;
+            shoot(videoCurrentTime);
             video.currentTime += 0.25;
-            if (video.currentTime == video.duration) {
+            if (video.currentTime === video.duration) {
                 clearInterval(interval)
             }
         }

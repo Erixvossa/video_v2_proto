@@ -2,3 +2,8 @@ video {
     border: 1px solid black;
     display: block;
 }
+
+.output {
+    display: flex;
+    overflow-x: auto;
+}
