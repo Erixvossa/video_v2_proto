@@ -40,3 +40,20 @@ video {
     content: ".";
     visibility: hidden;
 }
+
+.inaccurate-output {
+    display: flex;
+    flex-direction: row;
+}
+
+.inaccurate-output_div {
+    flex-grow: 1;
+}
+
+.inaccurate-output_div:hover {
+    border: 2px solid greenyellow;
+}
+
+.width {
+    width: 100%;
+}
