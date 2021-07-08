@@ -2,6 +2,7 @@ const input = document.getElementById('file-input');
 const video = document.getElementById('video');
 const videoSource = document.createElement('source');
 
+
 input.addEventListener('change', function() {
     const files = this.files || [];
 
@@ -62,12 +63,14 @@ function shoot(videoCurrentTime) {
     //console.log(videoCurrentTime);
     var video = document.getElementById(videoId);
     var output = document.getElementById('output');
+    const fastOutput = document.querySelector('.fast-output');
     var canvas = capture(video, scaleFactor);
     canvas.onclick = function() {
         window.open(this.toDataURL(image/jpg));
     };
     snapshots.unshift(canvas);
     output.innerHTML = '';
+    fastOutput.innerHTML = '';
 
     let scene = {};
     scene.canvas = canvas;
@@ -83,12 +86,21 @@ function shoot(videoCurrentTime) {
         div.append(scene.canvas)
         div.setAttribute('time', scene.time);
         output.prepend(div);
+
+        const fastDiv = document.createElement('div');
+        fastDiv.classList.add('fastDiv');
+        fastDiv.textContent = '';
+        fastOutput.prepend(fastDiv)
+
+
+
         div.addEventListener('click', () => {
             video.currentTime = scene.time;
             div.classList.toggle('scene_active');
         })
     })
 
+    console.log(videoTimeArr.length)
 
     // snapshots.forEach((snapshot) => {
     //     const div = document.createElement('div');

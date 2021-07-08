@@ -20,3 +20,23 @@ video {
 .scene:hover {
     border: 2px solid greenyellow;
 }
+
+.fast-output {
+    display: flex;
+    flex-direction: row;
+}
+
+.fastDiv {
+    background-color: blue;
+    /*margin-left: 5px;*/
+    flex-grow: 1;
+}
+
+.fastDiv:hover {
+    background-color: black;
+}
+
+.fastDiv::before {
+    content: ".";
+    visibility: hidden;
+}
