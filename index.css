@@ -7,3 +7,16 @@ video {
     display: flex;
     overflow-x: auto;
 }
+
+.scene {
+    display: flex;
+    box-sizing: border-box;
+}
+
+.scene_active {
+    border: 2px solid black;
+}
+
+.scene:hover {
+    border: 2px solid greenyellow;
+}

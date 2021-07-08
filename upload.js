@@ -75,13 +75,18 @@ function shoot(videoCurrentTime) {
 
 
     videoTimeArr.unshift(scene);
-    console.log(videoTimeArr);
+    //console.log(videoTimeArr);
 
     videoTimeArr.forEach((scene) => {
         const div = document.createElement('div');
+        div.classList.add('scene');
         div.append(scene.canvas)
         div.setAttribute('time', scene.time);
         output.prepend(div);
+        div.addEventListener('click', () => {
+            video.currentTime = scene.time;
+            div.classList.toggle('scene_active');
+        })
     })
 
 
