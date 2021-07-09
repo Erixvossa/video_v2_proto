@@ -60,15 +60,18 @@ function capture(video, scaleFactor) {
  * Invokes the <code>capture</code> function and attaches the canvas element to the DOM.
  */
 
+let screenWidth = Math.round(document.documentElement.scrollWidth / 40);
+console.log(screenWidth);
+
 const fillInaccurate = () => {
-    for (let i = 0; i < videoTimeArr.length; i = i + Math.round(videoTimeArr.length / 10) ) {
+    for (let i = 0; i < videoTimeArr.length; i = i + Math.round(videoTimeArr.length / screenWidth) ) {
         const inaccurateOutput = document.querySelector('.inaccurate-output');
         const innacurateDiv = document.createElement('div');
         innacurateDiv.classList.add('inaccurate-output_div');
         innacurateDiv.prepend(videoTimeArr[i].canvas);
         innacurateDiv.querySelector('canvas').classList.add('width');
         inaccurateOutput.prepend(innacurateDiv);
-        console.log(videoTimeArr[i].time);
+        //console.log(videoTimeArr[i].time);
 
         innacurateDiv.addEventListener('click', () => {
             video.currentTime = videoTimeArr[i].time;
@@ -174,19 +177,23 @@ let screens = {};
 
 
 
+
 video.addEventListener('loadeddata', () => {
+    console.log(video.duration)
         const shootInterval = () => {
             const videoCurrentTime = video.currentTime;
             shoot(videoCurrentTime);
             video.currentTime += 0.25;
-            if (video.currentTime === video.duration) {
+            console.log(videoTimeArr)
+
+                if (video.currentTime + 0.25 >= video.duration) {
                 clearInterval(interval)
                 fillInaccurate();
             }
         }
 
 
-        const interval = setInterval(shootInterval, 100);
+        const interval = setInterval(shootInterval, 150);
 })
 
 console.log(videoTimeArr.length)
