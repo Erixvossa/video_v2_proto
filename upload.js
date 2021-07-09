@@ -2,7 +2,59 @@ const input = document.getElementById('file-input');
 const video = document.getElementById('video');
 const videoSource = document.createElement('source');
 const captureButton = document.querySelector('#cit');
+const output = document.querySelector('.output');
+const fastOutput = document.querySelector('.fast-output');
+let screenWidth = Math.round(document.documentElement.scrollWidth / 60);
 
+
+let sceneArr = [];
+
+
+const renderFirst = () => {
+    output.innerHTML = "";
+    sceneArr.forEach((scene) => {
+        scene.image.classList.add('scene');
+        scene.image.addEventListener('click',() => {
+            video.currentTime = scene.time;
+        })
+        output.prepend(scene.image);
+    })
+}
+
+const renderSecond = () => {
+    sceneArr.forEach((scene) => {
+        const div = document.createElement('div');
+        div.setAttribute('time',scene.time)
+        div.classList.add('fastDiv');
+        div.textContent = '';
+        div.addEventListener('click', () => {
+            video.currentTime = scene.time;
+        })
+        fastOutput.prepend(div);
+    })
+}
+
+const renderThird = () => {
+
+
+    for (let i = 0; i < sceneArr.length; i = i + Math.round(sceneArr.length / screenWidth) ) {
+        const inaccurateOutput = document.querySelector('.inaccurate-output');
+        const innacurateDiv = document.createElement('div');
+        innacurateDiv.classList.add('inaccurate-output_div');
+        innacurateDiv.prepend(sceneArr[i].image);
+        innacurateDiv.querySelector('img').classList.add('width');
+        inaccurateOutput.prepend(innacurateDiv);
+        //console.log(videoTimeArr[i].time);
+
+        innacurateDiv.addEventListener('click', () => {
+            video.currentTime = sceneArr[i].time;
+        })
+        //console.log(sceneArr[i].time);
+
+    }
+
+
+}
 
 input.addEventListener('change', function() {
     const files = this.files || [];
@@ -34,6 +86,7 @@ function generateThumbnail(i, scaleFactor) {
     if (scaleFactor == null) {
         scaleFactor = 0.125;
     }
+
     var w = video.videoWidth * scaleFactor;
     var h = video.videoHeight * scaleFactor;
 
@@ -52,11 +105,33 @@ function generateThumbnail(i, scaleFactor) {
     //Опциональный момент.
     //img.setAttribute('time', i);
 
+
+
+    let scene = {};
+    scene.image = img;
+    scene.time = i;
+
+    sceneArr.push(scene);
+    var sort_by = function(field, reverse, primer){
+
+        var key = primer ?
+            function(x) {return primer(x[field])} :
+            function(x) {return x[field]};
+
+        reverse = !reverse ? 1 : -1;
+
+        return function (a, b) {
+            return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
+        }
+    }
+    sceneArr.sort(sort_by('time', true, parseInt));
+
+
     //append img in container div
-    document.querySelector('.output').appendChild(img);
-    img.addEventListener('click', () => {
-        video.currentTime = i;
-    })
+    // document.querySelector('.output').appendChild(img);
+    // img.addEventListener('click', () => {
+    //     video.currentTime = i;
+    // })
 }
 
 let activeGenerator = true;
@@ -77,6 +152,10 @@ video.addEventListener('seeked', function(e) {
             this.currentTime = i;
         } else {
             activeGenerator = false;
+            renderFirst();
+            renderSecond();
+            renderThird();
+            //console.log(sceneArr);
         }
     }
 });
@@ -84,6 +163,9 @@ video.addEventListener('seeked', function(e) {
 captureButton.addEventListener('click', (e) => {
     e.preventDefault();
     generateThumbnail(video.currentTime);
+    renderFirst();
+
+    //console.log(sceneArr)
 })
 
 
