@@ -14,7 +14,11 @@ video {
 }
 
 .scene_active {
-    border: 2px solid black;
+    border: 2px solid red;
+}
+
+.fastDiv_active {
+    border: 2px solid red;
 }
 
 .scene:hover {

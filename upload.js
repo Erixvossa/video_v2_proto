@@ -10,12 +10,28 @@ let screenWidth = Math.round(document.documentElement.scrollWidth / 60);
 let sceneArr = [];
 
 
+
+
 const renderFirst = () => {
     output.innerHTML = "";
     sceneArr.forEach((scene) => {
         scene.image.classList.add('scene');
+        scene.image.setAttribute('time', scene.time);
         scene.image.addEventListener('click',() => {
             video.currentTime = scene.time;
+            document.querySelectorAll('.scene').forEach((sel) => {
+                sel.classList.remove('scene_active');
+            });
+            scene.image.classList.add('scene_active');
+
+            // document.querySelectorAll('.fastDiv').forEach((el) => {
+            //     if (el.getAttribute('time') === scene.time) {
+            //         el.classList.add('fastDiv_active');
+            //     }
+            })
+
+
+
         })
         output.prepend(scene.image);
     })
@@ -112,19 +128,10 @@ function generateThumbnail(i, scaleFactor) {
     scene.time = i;
 
     sceneArr.push(scene);
-    var sort_by = function(field, reverse, primer){
-
-        var key = primer ?
-            function(x) {return primer(x[field])} :
-            function(x) {return x[field]};
-
-        reverse = !reverse ? 1 : -1;
-
-        return function (a, b) {
-            return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
-        }
+    function sortByTime(arr) {
+        arr.sort((a, b) => a.time < b.time ? 1 : -1);
     }
-    sceneArr.sort(sort_by('time', true, parseInt));
+    sortByTime(sceneArr);
 
 
     //append img in container div
