@@ -1,6 +1,7 @@
 const input = document.getElementById('file-input');
 const video = document.getElementById('video');
 const videoSource = document.createElement('source');
+const captureButton = document.querySelector('#cit');
 
 
 input.addEventListener('change', function() {
@@ -24,33 +25,66 @@ input.addEventListener('change', function() {
     reader.readAsDataURL(files[0]);
 });
 
-
+var i = 0;
 video.addEventListener('loadeddata', function() {
-    var duration = video.duration;
-    var i = 0;
-
-    var interval = setInterval(function() {
-        video.currentTime = i;
-        generateThumbnail(i);
-        i = i + 0.25;
-        if (i > duration) clearInterval(interval);
-    }, 100);
+    this.currentTime = i;
 });
 
-function generateThumbnail(i) {
+function generateThumbnail(i, scaleFactor) {
+    if (scaleFactor == null) {
+        scaleFactor = 0.125;
+    }
+    var w = video.videoWidth * scaleFactor;
+    var h = video.videoHeight * scaleFactor;
+
     //generate thumbnail URL data
     let thecanvas = document.createElement('canvas');
+    thecanvas.width = w;
+    thecanvas.height = h;
     var context = thecanvas.getContext('2d');
-    context.drawImage(video, 0, 0, 220, 150);
+    context.drawImage(video, 0, 0, w, h);
     var dataURL = thecanvas.toDataURL();
+
 
     //create img
     var img = document.createElement('img');
     img.setAttribute('src', dataURL);
+    //Опциональный момент.
+    //img.setAttribute('time', i);
 
     //append img in container div
     document.querySelector('.output').appendChild(img);
+    img.addEventListener('click', () => {
+        video.currentTime = i;
+    })
 }
+
+let activeGenerator = true;
+
+video.addEventListener('seeked', function(e) {
+
+    if (activeGenerator) {
+        // now video has seeked and current frames will show
+        // at the time as we expect
+        generateThumbnail(i);
+
+        // when frame is captured, increase here by 5 seconds
+        i += 0.25;
+
+        // if we are not past end, seek to next interval
+        if (i <= this.duration) {
+            // this will trigger another seeked event
+            this.currentTime = i;
+        } else {
+            activeGenerator = false;
+        }
+    }
+});
+
+captureButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    generateThumbnail(video.currentTime);
+})
 
 
 
