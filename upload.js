@@ -10,6 +10,42 @@ let screenWidth = Math.round(document.documentElement.scrollWidth / 60);
 let sceneArr = [];
 
 
+const addListeners = () => {
+    const output = document.querySelector('.output');
+    const sceneImg = output.querySelectorAll('.scene');
+
+    const innacurateOutput = document.querySelector('.inaccurate-output');
+    const innacutrateSceneImg = innacurateOutput.querySelectorAll('.scene');
+
+    sceneImg.forEach((el) => {
+        const sceneTime = el.getAttribute('time');
+        //console.log(sceneTime);
+        el.addEventListener('click', () => {
+            document.querySelectorAll('img').forEach((img) => {
+                if (img.getAttribute('time') === sceneTime) {
+                    img.classList.add('scene_active');
+                }
+            })
+            sceneImg.forEach((scene) => {
+                scene.classList.remove('scene_active');
+            });
+            el.classList.add('scene_active');
+            //
+            // if (document.querySelector('.inaccurate-output').getAttribute('time') === sceneTime) {
+            //     const innacurateSceneImg =
+            // }
+
+
+
+
+        });
+    });
+
+
+
+
+};
+
 
 
 const renderFirst = () => {
@@ -17,24 +53,26 @@ const renderFirst = () => {
     sceneArr.forEach((scene) => {
         scene.image.classList.add('scene');
         scene.image.setAttribute('time', scene.time);
-        scene.image.addEventListener('click',() => {
+        scene.image.addEventListener('click', () => {
             video.currentTime = scene.time;
-            document.querySelectorAll('.scene').forEach((sel) => {
-                sel.classList.remove('scene_active');
-            });
-            scene.image.classList.add('scene_active');
+            // document.querySelectorAll('.scene').forEach((sel) => {
+            //     sel.classList.remove('scene_active');
+            // });
+            // scene.image.classList.add('scene_active');
+
 
             // document.querySelectorAll('.fastDiv').forEach((el) => {
             //     if (el.getAttribute('time') === scene.time) {
             //         el.classList.add('fastDiv_active');
             //     }
-            })
+            // })
 
 
 
         })
         output.prepend(scene.image);
     })
+
 }
 
 const renderSecond = () => {
@@ -57,14 +95,16 @@ const renderThird = () => {
         const inaccurateOutput = document.querySelector('.inaccurate-output');
         const innacurateDiv = document.createElement('div');
         innacurateDiv.classList.add('inaccurate-output_div');
-        innacurateDiv.prepend(sceneArr[i].image);
+        const clonedImg = sceneArr[i].image.cloneNode(true);
+        innacurateDiv.prepend(clonedImg);
         innacurateDiv.querySelector('img').classList.add('width');
         inaccurateOutput.prepend(innacurateDiv);
-        //console.log(videoTimeArr[i].time);
+        //console.log(sceneArr[i].image);
+        // console.log(videoTimeArr[i].time);
 
-        innacurateDiv.addEventListener('click', () => {
-            video.currentTime = sceneArr[i].time;
-        })
+        // innacurateDiv.addEventListener('click', () => {
+        //     video.currentTime = sceneArr[i].time;
+        // })
         //console.log(sceneArr[i].time);
 
     }
@@ -163,9 +203,17 @@ video.addEventListener('seeked', function(e) {
             renderSecond();
             renderThird();
             //console.log(sceneArr);
+
+            addListeners();
         }
     }
 });
+
+
+
+
+
+
 
 captureButton.addEventListener('click', (e) => {
     e.preventDefault();
