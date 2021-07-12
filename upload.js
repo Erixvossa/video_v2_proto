@@ -5,38 +5,40 @@ const captureButton = document.querySelector('#cit');
 const output = document.querySelector('.output');
 const fastOutput = document.querySelector('.fast-output');
 let screenWidth = Math.round(document.documentElement.scrollWidth / 60);
+let imageWidth;
 
 
 let sceneArr = [];
+let sceneArrToBack = [];
 
 
 const addListeners = () => {
-    const output = document.querySelector('.output');
-    const sceneImg = output.querySelectorAll('.scene');
+    const navigation = document.querySelectorAll('.navigation');
 
-    const innacurateOutput = document.querySelector('.inaccurate-output');
-    const innacutrateSceneImg = innacurateOutput.querySelectorAll('.scene');
-
-    sceneImg.forEach((el) => {
+    navigation.forEach((el) => {
         const sceneTime = el.getAttribute('time');
         //console.log(sceneTime);
         el.addEventListener('click', () => {
-            document.querySelectorAll('img').forEach((img) => {
-                if (img.getAttribute('time') === sceneTime) {
-                    img.classList.add('scene_active');
+            document.querySelectorAll('.navigation').forEach((element) => {
+                element.classList.remove('scene_active');
+                if (element.getAttribute('time') === sceneTime) {
+                    element.classList.add('scene_active');
                 }
             })
-            sceneImg.forEach((scene) => {
-                scene.classList.remove('scene_active');
-            });
-            el.classList.add('scene_active');
+            if (el.parentElement != document.querySelector('.output')) {
+                console.log(sceneTime);
+                const targetWidth = (((sceneTime / 0.25) - 5) * imageWidth);
+                const width = targetWidth;
+                document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
+            }
+            // sceneImg.forEach((scene) => {
+            //     scene.classList.remove('scene_active');
+            // });
+            //el.classList.add('scene_active');
             //
             // if (document.querySelector('.inaccurate-output').getAttribute('time') === sceneTime) {
             //     const innacurateSceneImg =
             // }
-
-
-
 
         });
     });
@@ -52,6 +54,7 @@ const renderFirst = () => {
     output.innerHTML = "";
     sceneArr.forEach((scene) => {
         scene.image.classList.add('scene');
+        scene.image.classList.add('navigation');
         scene.image.setAttribute('time', scene.time);
         scene.image.addEventListener('click', () => {
             video.currentTime = scene.time;
@@ -80,6 +83,7 @@ const renderSecond = () => {
         const div = document.createElement('div');
         div.setAttribute('time',scene.time)
         div.classList.add('fastDiv');
+        div.classList.add('navigation');
         div.textContent = '';
         div.addEventListener('click', () => {
             video.currentTime = scene.time;
@@ -149,6 +153,11 @@ function generateThumbnail(i, scaleFactor) {
     //generate thumbnail URL data
     let thecanvas = document.createElement('canvas');
     thecanvas.width = w;
+
+    // для прокрутки верхнего ряда
+    imageWidth = w;
+
+
     thecanvas.height = h;
     var context = thecanvas.getContext('2d');
     context.drawImage(video, 0, 0, w, h);
