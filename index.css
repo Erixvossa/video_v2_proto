@@ -1,3 +1,12 @@
+.page {
+    display: flex;
+}
+
+.video-container {
+    display: flex;
+    flex-direction: column;
+}
+
 video {
     border: 1px solid black;
     display: block;
@@ -14,7 +23,11 @@ video {
 }
 
 .scene_active {
-    border: 2px solid black;
+    border: 2px solid red;
+}
+
+.fastDiv_active {
+    border: 2px solid red;
 }
 
 .scene:hover {
