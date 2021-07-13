@@ -4,6 +4,9 @@ const videoSource = document.createElement('source');
 const captureButton = document.querySelector('#cit');
 const output = document.querySelector('.output');
 const fastOutput = document.querySelector('.fast-output');
+const popup = document.querySelector('.popup');
+
+
 let screenWidth = Math.round(document.documentElement.scrollWidth / 60);
 let imageWidth;
 
@@ -12,18 +15,18 @@ let sceneArr = [];
 let sceneArrToBack = [];
 
 
-const generatePopup = (el, time) => {
-    const popup = document.createElement('div');
-    const sceneTime = document.createElement('p');
-    const button = document.createElement('div');
-    button.classList.add('popup__button');
-    button.textContent = 'Добавить сцену';
-    sceneTime.textContent = time;
-    popup.classList.add('popup');
-    popup.append(sceneTime);
-    popup.append(button);
-    el.prepend(popup);
-}
+// const generatePopup = (el, time) => {
+//     const popup = document.createElement('div');
+//     const sceneTime = document.createElement('p');
+//     const button = document.createElement('div');
+//     button.classList.add('popup__button');
+//     button.textContent = 'Добавить сцену';
+//     sceneTime.textContent = time;
+//     popup.classList.add('popup');
+//     popup.append(sceneTime);
+//     popup.append(button);
+//     el.prepend(popup);
+// }
 
 
 
@@ -78,6 +81,7 @@ const renderFirst = () => {
         scene.image.setAttribute('time', scene.time);
         scene.image.addEventListener('click', () => {
             video.currentTime = scene.time;
+            popup.classList.add('popup_show');
             // document.querySelectorAll('.scene').forEach((sel) => {
             //     sel.classList.remove('scene_active');
             // });
@@ -95,7 +99,7 @@ const renderFirst = () => {
         })
         const sceneDiv = document.createElement('div');
         output.prepend(sceneDiv);
-        generatePopup(sceneDiv, scene.time);
+        //generatePopup(sceneDiv, scene.time);
         sceneDiv.prepend(scene.image);
     })
 
@@ -275,6 +279,14 @@ const generateScene = (sceneName) => {
 
 }
 
+popup.querySelector('.popup__button').addEventListener('click', () => {
+    let sceneName = popup.querySelector('.popup__input').value;
+    generateScene(sceneName);
+    popup.querySelector('.popup__input').value = '';
+    renderScenes();
+})
+
+
 const renderScenes = () => {
 
     const sceneSelector = document.querySelector('.scene-selector');
@@ -322,6 +334,12 @@ captureButton.addEventListener('click', (e) => {
     //console.log(sceneArr)
 })
 
+
+document.addEventListener('click', (e) => {
+    if (e.target !== document.querySelector('.scene_active') && e.target !== document.querySelector('.popup__input') && e.target !== document.querySelector('.popup__button')) {
+        popup.classList.remove('popup_show');
+    }
+}, true);
 
 
 // var videoId = 'video';
