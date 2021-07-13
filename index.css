@@ -70,3 +70,26 @@ video {
 .width {
     width: 100%;
 }
+
+.scene-selector {
+    padding-top: 22px;
+    margin-left: 22px;
+}
+
+.scene-selector__scene {
+    margin-top: 10px;
+}
+
+.scene-selector__scene:first-of-type {
+    margin-top: 0;
+}
+
+.scene-selector__span {
+    margin-right: 22px;
+    width: 44px;
+    cursor: pointer;
+}
+
+.scene-selector__label {
+    display: flex;
+}

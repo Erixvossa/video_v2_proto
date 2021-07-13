@@ -12,6 +12,21 @@ let sceneArr = [];
 let sceneArrToBack = [];
 
 
+const generatePopup = (el, time) => {
+    const popup = document.createElement('div');
+    const sceneTime = document.createElement('p');
+    const button = document.createElement('div');
+    button.classList.add('popup__button');
+    button.textContent = 'Добавить сцену';
+    sceneTime.textContent = time;
+    popup.classList.add('popup');
+    popup.append(sceneTime);
+    popup.append(button);
+    el.prepend(popup);
+}
+
+
+
 const addListeners = () => {
     const navigation = document.querySelectorAll('.navigation');
 
@@ -25,11 +40,14 @@ const addListeners = () => {
                     element.classList.add('scene_active');
                 }
             })
-            if (el.parentElement != document.querySelector('.output')) {
+            if (el.parentElement !== document.querySelector('.output')) {
                 console.log(sceneTime);
                 const targetWidth = (((sceneTime / 0.25) - 5) * imageWidth);
                 const width = targetWidth;
                 document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
+            }
+            else if (el.parentElement === document.querySelector('.output')) {
+
             }
             // sceneImg.forEach((scene) => {
             //     scene.classList.remove('scene_active');
@@ -53,6 +71,8 @@ const addListeners = () => {
 const renderFirst = () => {
     output.innerHTML = "";
     sceneArr.forEach((scene) => {
+    //generatePopup(scene);
+
         scene.image.classList.add('scene');
         scene.image.classList.add('navigation');
         scene.image.setAttribute('time', scene.time);
@@ -73,7 +93,10 @@ const renderFirst = () => {
 
 
         })
-        output.prepend(scene.image);
+        const sceneDiv = document.createElement('div');
+        output.prepend(sceneDiv);
+        generatePopup(sceneDiv, scene.time);
+        sceneDiv.prepend(scene.image);
     })
 
 }
@@ -106,9 +129,9 @@ const renderThird = () => {
         //console.log(sceneArr[i].image);
         // console.log(videoTimeArr[i].time);
 
-        // innacurateDiv.addEventListener('click', () => {
-        //     video.currentTime = sceneArr[i].time;
-        // })
+        innacurateDiv.addEventListener('click', () => {
+            video.currentTime = sceneArr[i].time;
+        })
         //console.log(sceneArr[i].time);
 
     }
@@ -219,15 +242,82 @@ video.addEventListener('seeked', function(e) {
 });
 
 
+const generateScene = (sceneName) => {
 
 
+
+
+    var w = video.videoWidth;
+    var h = video.videoHeight;
+    let canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    var context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0, w, h);
+    var dataURL = canvas.toDataURL();
+
+    var img = document.createElement('img');
+    img.setAttribute('src', dataURL);
+
+
+    let scene = {};
+    scene.image = img;
+    scene.time = video.currentTime;
+    scene.name = sceneName;
+
+    sceneArrToBack.push(scene);
+    function sortByTime(arr) {
+        arr.sort((a, b) => a.time < b.time ? 1 : -1);
+    }
+    sortByTime(sceneArrToBack);
+    console.log(sceneArrToBack);
+
+
+}
+
+const renderScenes = () => {
+
+    const sceneSelector = document.querySelector('.scene-selector');
+    sceneSelector.innerHTML = '';
+
+
+    sceneArrToBack.forEach((scene) => {
+        const sceneSelectorElement = document.createElement('div');
+        sceneSelectorElement.classList.add('scene-selector__scene');
+        const sceneSelectorElementName = document.createElement('input');
+        const sceneSelectorElementLabel = document.createElement('label');
+        const sceneSelectorElementLabelSpan = document.createElement('span');
+
+        sceneSelectorElementLabelSpan.textContent = `${scene.time} s.`;
+        sceneSelectorElementLabel.append(sceneSelectorElementLabelSpan);
+        sceneSelectorElementLabel.classList.add('scene-selector__label');
+        sceneSelectorElementLabelSpan.classList.add('scene-selector__span');
+
+        sceneSelector.prepend(sceneSelectorElement);
+        sceneSelectorElementName.placeholder = 'Введите название сцены';
+        sceneSelectorElementName.value = scene.name;
+        sceneSelectorElementName.addEventListener('change', () => {
+            scene.name = sceneSelectorElementName.value;
+        })
+
+
+        sceneSelectorElement.append(sceneSelectorElementLabel);
+        sceneSelectorElementLabel.append(sceneSelectorElementName);
+        sceneSelectorElement.addEventListener('click', () => {
+            video.currentTime = scene.time;
+        })
+    })
+}
 
 
 
 captureButton.addEventListener('click', (e) => {
     e.preventDefault();
-    generateThumbnail(video.currentTime);
-    renderFirst();
+    //generateThumbnail(video.currentTime);
+    //renderFirst();
+    let sceneName = '';
+    generateScene(sceneName);
+    renderScenes();
 
     //console.log(sceneArr)
 })
