@@ -6,251 +6,15 @@ const output = document.querySelector('.output');
 const fastOutput = document.querySelector('.fast-output');
 const popup = document.querySelector('.popup');
 
-
-let screenWidth = Math.round(document.documentElement.scrollWidth / 60);
 let imageWidth;
 
 
 let sceneArr = [];
 let sceneArrToBack = [];
 
-
-// const generatePopup = (el, time) => {
-//     const popup = document.createElement('div');
-//     const sceneTime = document.createElement('p');
-//     const button = document.createElement('div');
-//     button.classList.add('popup__button');
-//     button.textContent = 'Добавить сцену';
-//     sceneTime.textContent = time;
-//     popup.classList.add('popup');
-//     popup.append(sceneTime);
-//     popup.append(button);
-//     el.prepend(popup);
-// }
-
-
-
-const addListeners = () => {
-    const navigation = document.querySelectorAll('.navigation');
-
-    navigation.forEach((el) => {
-        const sceneTime = el.getAttribute('time');
-        //console.log(sceneTime);
-        el.addEventListener('click', () => {
-            document.querySelectorAll('.navigation').forEach((element) => {
-                element.classList.remove('scene_active');
-                if (element.getAttribute('time') === sceneTime) {
-                    element.classList.add('scene_active');
-                }
-            })
-            if (el.parentElement !== document.querySelector('.output')) {
-                console.log(sceneTime);
-                const targetWidth = (((sceneTime / 0.25) - 5) * imageWidth);
-                const width = targetWidth;
-                document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
-            }
-            else if (el.parentElement === document.querySelector('.output')) {
-
-            }
-            // sceneImg.forEach((scene) => {
-            //     scene.classList.remove('scene_active');
-            // });
-            //el.classList.add('scene_active');
-            //
-            // if (document.querySelector('.inaccurate-output').getAttribute('time') === sceneTime) {
-            //     const innacurateSceneImg =
-            // }
-
-        });
-    });
-
-
-
-
-};
-
-
-
-const renderFirst = () => {
-    output.innerHTML = "";
-    sceneArr.forEach((scene) => {
-    //generatePopup(scene);
-
-        scene.image.classList.add('scene');
-        scene.image.classList.add('navigation');
-        scene.image.setAttribute('time', scene.time);
-        scene.image.addEventListener('click', () => {
-            video.currentTime = scene.time;
-            popup.classList.add('popup_show');
-            // document.querySelectorAll('.scene').forEach((sel) => {
-            //     sel.classList.remove('scene_active');
-            // });
-            // scene.image.classList.add('scene_active');
-
-
-            // document.querySelectorAll('.fastDiv').forEach((el) => {
-            //     if (el.getAttribute('time') === scene.time) {
-            //         el.classList.add('fastDiv_active');
-            //     }
-            // })
-
-
-
-        })
-        const sceneDiv = document.createElement('div');
-        output.prepend(sceneDiv);
-        //generatePopup(sceneDiv, scene.time);
-        sceneDiv.prepend(scene.image);
-    })
-
-}
-
-const renderSecond = () => {
-    sceneArr.forEach((scene) => {
-        const div = document.createElement('div');
-        div.setAttribute('time',scene.time)
-        div.classList.add('fastDiv');
-        div.classList.add('navigation');
-        div.textContent = '';
-        div.addEventListener('click', () => {
-            video.currentTime = scene.time;
-        })
-        fastOutput.prepend(div);
-    })
-}
-
-const renderThird = () => {
-
-
-    for (let i = 0; i < sceneArr.length; i = i + Math.round(sceneArr.length / screenWidth) ) {
-        const inaccurateOutput = document.querySelector('.inaccurate-output');
-        const innacurateDiv = document.createElement('div');
-        innacurateDiv.classList.add('inaccurate-output_div');
-        const clonedImg = sceneArr[i].image.cloneNode(true);
-        innacurateDiv.prepend(clonedImg);
-        innacurateDiv.querySelector('img').classList.add('width');
-        inaccurateOutput.prepend(innacurateDiv);
-        //console.log(sceneArr[i].image);
-        // console.log(videoTimeArr[i].time);
-
-        innacurateDiv.addEventListener('click', () => {
-            video.currentTime = sceneArr[i].time;
-        })
-        //console.log(sceneArr[i].time);
-
-    }
-
-
-}
-
-input.addEventListener('change', function() {
-    const files = this.files || [];
-
-    if (!files.length) return;
-
-    const reader = new FileReader();
-
-    reader.onload = function (e) {
-        videoSource.setAttribute('src', e.target.result);
-        video.appendChild(videoSource);
-        video.load();
-        //video.play();
-    };
-
-    reader.onprogress = function (e) {
-        console.log('progress: ', Math.round((e.loaded * 100) / e.total));
-    };
-
-    reader.readAsDataURL(files[0]);
-});
-
-var i = 0;
-video.addEventListener('loadeddata', function() {
-    this.currentTime = i;
-});
-
-function generateThumbnail(i, scaleFactor) {
-    if (scaleFactor == null) {
-        scaleFactor = 0.125;
-    }
-
-    var w = video.videoWidth * scaleFactor;
-    var h = video.videoHeight * scaleFactor;
-
-    //generate thumbnail URL data
-    let thecanvas = document.createElement('canvas');
-    thecanvas.width = w;
-
-    // для прокрутки верхнего ряда
-    imageWidth = w;
-
-
-    thecanvas.height = h;
-    var context = thecanvas.getContext('2d');
-    context.drawImage(video, 0, 0, w, h);
-    var dataURL = thecanvas.toDataURL();
-
-
-    //create img
-    var img = document.createElement('img');
-    img.setAttribute('src', dataURL);
-    //Опциональный момент.
-    //img.setAttribute('time', i);
-
-
-
-    let scene = {};
-    scene.image = img;
-    scene.time = i;
-
-    sceneArr.push(scene);
-    function sortByTime(arr) {
-        arr.sort((a, b) => a.time < b.time ? 1 : -1);
-    }
-    sortByTime(sceneArr);
-
-
-    //append img in container div
-    // document.querySelector('.output').appendChild(img);
-    // img.addEventListener('click', () => {
-    //     video.currentTime = i;
-    // })
-}
-
-let activeGenerator = true;
-
-video.addEventListener('seeked', function(e) {
-
-    if (activeGenerator) {
-        // now video has seeked and current frames will show
-        // at the time as we expect
-        generateThumbnail(i);
-
-        // when frame is captured, increase here by 5 seconds
-        i += 0.25;
-
-        // if we are not past end, seek to next interval
-        if (i <= this.duration) {
-            // this will trigger another seeked event
-            this.currentTime = i;
-        } else {
-            activeGenerator = false;
-            renderFirst();
-            renderSecond();
-            renderThird();
-            //console.log(sceneArr);
-
-            addListeners();
-        }
-    }
-});
-
+let screenWidth = Math.round(document.documentElement.scrollWidth / 60);
 
 const generateScene = (sceneName) => {
-
-
-
-
     var w = video.videoWidth;
     var h = video.videoHeight;
     let canvas = document.createElement('canvas');
@@ -270,22 +34,16 @@ const generateScene = (sceneName) => {
     scene.name = sceneName;
 
     sceneArrToBack.push(scene);
+
     function sortByTime(arr) {
         arr.sort((a, b) => a.time < b.time ? 1 : -1);
     }
+
     sortByTime(sceneArrToBack);
     console.log(sceneArrToBack);
 
 
 }
-
-popup.querySelector('.popup__button').addEventListener('click', () => {
-    let sceneName = popup.querySelector('.popup__input').value;
-    generateScene(sceneName);
-    popup.querySelector('.popup__input').value = '';
-    renderScenes();
-})
-
 
 const renderScenes = () => {
 
@@ -321,18 +79,28 @@ const renderScenes = () => {
     })
 }
 
+const renderScenesPopupListener = () => {
+    let sceneName = popup.querySelector('.popup__input').value;
+    generateScene(sceneName);
+    popup.querySelector('.popup__input').value = '';
+    renderScenes();
+}
+
+popup.querySelector('.popup__button').addEventListener('click', renderScenesPopupListener);
 
 
-captureButton.addEventListener('click', (e) => {
+
+
+const renderScenesListener = (e) => {
     e.preventDefault();
     //generateThumbnail(video.currentTime);
     //renderFirst();
     let sceneName = '';
     generateScene(sceneName);
     renderScenes();
+}
 
-    //console.log(sceneArr)
-})
+captureButton.addEventListener('click', renderScenesListener);
 
 
 document.addEventListener('click', (e) => {
@@ -340,6 +108,265 @@ document.addEventListener('click', (e) => {
         popup.classList.remove('popup_show');
     }
 }, true);
+
+function removeEventListeners () {
+    captureButton.removeEventListener('click', renderScenesListener);
+    popup.querySelector('.popup__button').removeEventListener('click', renderScenesPopupListener);
+}
+
+
+
+
+input.addEventListener('change', function() {
+    const files = this.files || [];
+
+    if (!files.length) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        videoSource.setAttribute('src', e.target.result);
+        video.appendChild(videoSource);
+        startEditor();
+        //video.load();
+        //video.play();
+    };
+
+    reader.onprogress = function (e) {
+        console.log('progress: ', Math.round((e.loaded * 100) / e.total));
+    };
+
+    reader.readAsDataURL(files[0]);
+
+
+
+});
+
+// const generatePopup = (el, time) => {
+//     const popup = document.createElement('div');
+//     const sceneTime = document.createElement('p');
+//     const button = document.createElement('div');
+//     button.classList.add('popup__button');
+//     button.textContent = 'Добавить сцену';
+//     sceneTime.textContent = time;
+//     popup.classList.add('popup');
+//     popup.append(sceneTime);
+//     popup.append(button);
+//     el.prepend(popup);
+// }
+
+
+const startEditor = () => {
+
+    sceneArr = [];
+    sceneArrToBack = [];
+    output.innerHTML = '';
+    fastOutput.innerHTML = '';
+    document.querySelector('.inaccurate-output').innerHTML = '';
+    document.querySelector('.scene-selector').innerHTML = '';
+
+    video.load();
+
+
+    const addListeners = () => {
+        const navigation = document.querySelectorAll('.navigation');
+
+        navigation.forEach((el) => {
+            const sceneTime = el.getAttribute('time');
+            //console.log(sceneTime);
+            el.addEventListener('click', () => {
+                document.querySelectorAll('.navigation').forEach((element) => {
+                    element.classList.remove('scene_active');
+                    if (element.getAttribute('time') === sceneTime) {
+                        element.classList.add('scene_active');
+                    }
+                });
+                if (el.parentElement !== document.querySelector('.output')) {
+                    console.log(sceneTime);
+                    const targetWidth = (((sceneTime / 0.25) - 5) * imageWidth);
+                    const width = targetWidth;
+                    document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
+                } else if (el.parentElement === document.querySelector('.output')) {
+
+                }
+                // sceneImg.forEach((scene) => {
+                //     scene.classList.remove('scene_active');
+                // });
+                //el.classList.add('scene_active');
+                //
+                // if (document.querySelector('.inaccurate-output').getAttribute('time') === sceneTime) {
+                //     const innacurateSceneImg =
+                // }
+
+            });
+        });
+
+
+    };
+
+
+    const renderFirst = () => {
+        output.innerHTML = "";
+        sceneArr.forEach((scene) => {
+            //generatePopup(scene);
+
+            scene.image.classList.add('scene');
+            scene.image.classList.add('navigation');
+            scene.image.setAttribute('time', scene.time);
+            scene.image.addEventListener('click', () => {
+                video.currentTime = scene.time;
+                popup.classList.add('popup_show');
+                // document.querySelectorAll('.scene').forEach((sel) => {
+                //     sel.classList.remove('scene_active');
+                // });
+                // scene.image.classList.add('scene_active');
+
+
+                // document.querySelectorAll('.fastDiv').forEach((el) => {
+                //     if (el.getAttribute('time') === scene.time) {
+                //         el.classList.add('fastDiv_active');
+                //     }
+                // })
+
+
+            })
+            const sceneDiv = document.createElement('div');
+            output.prepend(sceneDiv);
+            //generatePopup(sceneDiv, scene.time);
+            sceneDiv.prepend(scene.image);
+        })
+
+    }
+
+    const renderSecond = () => {
+        sceneArr.forEach((scene) => {
+            const div = document.createElement('div');
+            div.setAttribute('time', scene.time)
+            div.classList.add('fastDiv');
+            div.classList.add('navigation');
+            div.textContent = '';
+            div.addEventListener('click', () => {
+                video.currentTime = scene.time;
+            })
+            fastOutput.prepend(div);
+        })
+    }
+
+    const renderThird = () => {
+
+
+        for (let i = 0; i < sceneArr.length; i = i + Math.round(sceneArr.length / screenWidth)) {
+            const inaccurateOutput = document.querySelector('.inaccurate-output');
+            const innacurateDiv = document.createElement('div');
+            innacurateDiv.classList.add('inaccurate-output_div');
+            const clonedImg = sceneArr[i].image.cloneNode(true);
+            innacurateDiv.prepend(clonedImg);
+            innacurateDiv.querySelector('img').classList.add('width');
+            inaccurateOutput.prepend(innacurateDiv);
+            //console.log(sceneArr[i].image);
+            // console.log(videoTimeArr[i].time);
+
+            innacurateDiv.addEventListener('click', () => {
+                video.currentTime = sceneArr[i].time;
+            })
+            //console.log(sceneArr[i].time);
+
+        }
+
+
+    }
+
+
+    var i = 0;
+    video.addEventListener('loadeddata', function () {
+        this.currentTime = i;
+    });
+
+    function generateThumbnail(i, scaleFactor) {
+        if (scaleFactor == null) {
+            scaleFactor = 0.125;
+        }
+
+        var w = video.videoWidth * scaleFactor;
+        var h = video.videoHeight * scaleFactor;
+
+        //generate thumbnail URL data
+        let thecanvas = document.createElement('canvas');
+        thecanvas.width = w;
+
+        // для прокрутки верхнего ряда
+        imageWidth = w;
+
+
+        thecanvas.height = h;
+        var context = thecanvas.getContext('2d');
+        context.drawImage(video, 0, 0, w, h);
+        var dataURL = thecanvas.toDataURL();
+
+
+        //create img
+        var img = document.createElement('img');
+        img.setAttribute('src', dataURL);
+        //Опциональный момент.
+        //img.setAttribute('time', i);
+
+
+        let scene = {};
+        scene.image = img;
+        scene.time = i;
+
+        sceneArr.push(scene);
+
+        function sortByTime(arr) {
+            arr.sort((a, b) => a.time < b.time ? 1 : -1);
+        }
+
+        sortByTime(sceneArr);
+
+
+        //append img in container div
+        // document.querySelector('.output').appendChild(img);
+        // img.addEventListener('click', () => {
+        //     video.currentTime = i;
+        // })
+    }
+
+    let activeGenerator = true;
+
+    video.addEventListener('seeked', function (e) {
+
+        if (activeGenerator) {
+            // now video has seeked and current frames will show
+            // at the time as we expect
+            generateThumbnail(i);
+
+            // when frame is captured, increase here by 5 seconds
+            i += 0.25;
+
+            // if we are not past end, seek to next interval
+            if (i <= this.duration) {
+                // this will trigger another seeked event
+                this.currentTime = i;
+            } else {
+                activeGenerator = false;
+                renderFirst();
+                renderSecond();
+                renderThird();
+                //console.log(sceneArr);
+
+                addListeners();
+                video.currentTime = 0;
+            }
+        }
+    });
+
+
+
+
+
+
+
+}
 
 
 // var videoId = 'video';
