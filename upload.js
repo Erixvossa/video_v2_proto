@@ -16,6 +16,46 @@ let sceneArrToBack = [];
 
 let screenWidth = Math.round(document.documentElement.scrollWidth / 60);
 
+let pressed = false;
+let moved = false;
+
+const captureCoordsStart = (e) => {
+    let x = e.offsetX;
+    let y = e.offsetY;
+    console.log(x,y)
+}
+
+
+const removeControls = (e) => {
+    if (pressed && moved) {
+        video.removeAttribute('controls');
+        captureCoordsStart(e);
+    }
+    else {
+        video.setAttribute('controls', 'true');
+    }
+}
+
+let drag = false;
+video.addEventListener('mousedown', (e) => {
+    //drag = false;
+    pressed = true;
+    removeControls(e);
+});
+video.addEventListener('mousemove', (e) => {
+    //drag = true;
+    moved = true;
+    removeControls(e);
+});
+document.addEventListener('mouseup', () => {
+    //console.log(drag ? 'drag' : 'click');
+    moved = false;
+    pressed = false;
+    removeControls(pressed, moved);
+});
+
+
+
 const generateScene = (sceneName) => {
     var w = video.videoWidth;
     var h = video.videoHeight;
@@ -395,7 +435,7 @@ const startEditor = () => {
                     let currentTime = video.currentTime;
                     let numberTwo = currentTime.toFixed(2) * 100;
                     let numberThree = ((Math.round(numberTwo / 25) * 25) / 100) + '';
-                    console.log(numberThree);
+                    //console.log(numberThree);
                     document.querySelectorAll('.navigation').forEach((scene) => {
                         if (scene.getAttribute('time') === numberThree) {
                             scene.classList.add('scene_active');

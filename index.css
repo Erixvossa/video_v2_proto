@@ -5,6 +5,10 @@
     height: calc(100vh - 16px);
 }
 
+.button {
+    display: none;
+}
+
 .main-container {
     display: flex;
 }
