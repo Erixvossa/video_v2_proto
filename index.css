@@ -1,5 +1,12 @@
 .page {
     display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100vh - 16px);
+}
+
+.main-container {
+    display: flex;
 }
 
 .video-container {
@@ -113,6 +120,14 @@ video {
     margin-block: 0;
 }
 
+.scene-list__container {
+    margin-left: 2px;
+    margin-right: 2px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+}
+
 .popup__button {
     background: #4285f4;
     border: 1px solid gray;
@@ -122,4 +137,34 @@ video {
     text-align: center;
     cursor: pointer;
     line-height: 20px;
+}
+
+.scene-list__img {
+    width: auto;
+    height: 25vh;
+    border-radius: 5px;
+}
+
+.scene-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow-y: scroll;
+    height: 51vh;
+    margin-left: 22px;
+    padding-top: 22px;
+}
+
+.scene-list__title {
+    margin: 2px 0;
+    min-height: 20px;
+}
+
+.scene-list__container:hover {
+    border: 2px solid greenyellow;
+    cursor: pointer;
+}
+
+.scene-list__container_active {
+    border: 2px solid red;
 }

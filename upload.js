@@ -7,7 +7,9 @@ const fastOutput = document.querySelector('.fast-output');
 const popup = document.querySelector('.popup');
 
 let imageWidth;
-
+console.log(document.documentElement.clientHeight);
+let videoHeight = (document.documentElement.clientHeight / 2) + "";
+video.setAttribute('height', videoHeight)
 
 let sceneArr = [];
 let sceneArrToBack = [];
@@ -50,6 +52,9 @@ const renderScenes = () => {
     const sceneSelector = document.querySelector('.scene-selector');
     sceneSelector.innerHTML = '';
 
+    const sceneList = document.querySelector('.scene-list');
+    sceneList.innerHTML = '';
+
 
     sceneArrToBack.forEach((scene) => {
         const sceneSelectorElement = document.createElement('div');
@@ -76,6 +81,33 @@ const renderScenes = () => {
         sceneSelectorElement.addEventListener('click', () => {
             video.currentTime = scene.time;
         })
+
+        const sceneListSceneContainer = document.createElement('div');
+        const sceneListSceneName = document.createElement('p');
+        sceneListSceneName.classList.add('scene-list__title');
+        sceneListSceneContainer.classList.add('scene-list__container');
+        sceneList.prepend(sceneListSceneContainer);
+        scene.image.classList.add('scene-list__img');
+        if (scene.name !== '') {
+            sceneListSceneName.textContent = scene.name;
+        }
+        else {
+            sceneListSceneName.textContent = 'Untitled';
+        }
+
+
+        sceneListSceneContainer.append(sceneListSceneName);
+        sceneListSceneContainer.append(scene.image);
+        sceneListSceneContainer.setAttribute('time', scene.time);
+        sceneListSceneContainer.addEventListener('click', () => {
+            // document.querySelectorAll('scene-list__container').forEach((sel) => {
+            //     sel.classList.remove('scene-list__container_active');
+            // })
+            //sceneListSceneContainer.classList.add('scene-list__container_active')
+            video.currentTime = sceneListSceneContainer.getAttribute('time');
+        })
+
+
     })
 }
 
@@ -166,6 +198,8 @@ const startEditor = () => {
     document.querySelector('.scene-selector').innerHTML = '';
 
     video.load();
+
+
 
 
     const addListeners = () => {
@@ -356,6 +390,29 @@ const startEditor = () => {
 
                 addListeners();
                 video.currentTime = 0;
+
+                video.addEventListener('timeupdate', () => {
+                    let currentTime = video.currentTime;
+                    let numberTwo = currentTime.toFixed(2) * 100;
+                    let numberThree = ((Math.round(numberTwo / 25) * 25) / 100) + '';
+                    console.log(numberThree);
+                    document.querySelectorAll('.navigation').forEach((scene) => {
+                        if (scene.getAttribute('time') === numberThree) {
+                            scene.classList.add('scene_active');
+                            if (scene.parentElement.parentElement === document.querySelector('.output')) {
+
+                                const targetWidth = (((scene.getAttribute('time') / 0.25) - 5) * imageWidth);
+                                const width = targetWidth;
+                                document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
+                            }
+                        }
+                        else {
+                            scene.classList.remove('scene_active');
+                        }
+                    })
+
+
+                })
             }
         }
     });
