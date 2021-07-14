@@ -185,4 +185,5 @@ video {
     height: 0;
     opacity: .7;
     background-color: gray;
+    visibility: visible;
 }

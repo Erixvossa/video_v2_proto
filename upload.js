@@ -22,7 +22,8 @@ let screenWidth = Math.round(document.documentElement.scrollWidth / 60);
 let pressed = false;
 let moved = false;
 
-
+let origX = 0;
+let origY = 0;
 let captureCoordsEndFlag = false;
 let captureCoordsStartFlag = false;
 const captureCoordsStart = (e) => {
@@ -32,11 +33,17 @@ const captureCoordsStart = (e) => {
     if (captureCoordsStartFlag) {
         captureCoordsStartFlag = false;
 
+        origX = e.offsetX;
+        origY = e.offsetY;
+
+        blur.style.left = origX + 'px';
+        blur.style.top = origY + 'px';
+
 
 
         let startX = e.offsetX;
         let startY = e.offsetY;
-        //console.log(`Начало выделения ${startX}, ${startY}`);
+        console.log(`Начало выделения ${origX}, ${origY}`);
         // blur.style.left = startX + 'px';
         // blur.style.top = startY + 'px';
     }
@@ -46,50 +53,9 @@ const captureCoordsStart = (e) => {
         let endY = e.offsetY;
 
 
-
         //console.log(`Конец выделения ${endX}, ${endY}`);
     }
-}
 
-
-const removeControls = (e) => {
-    if (pressed && moved) {
-        video.removeAttribute('controls');
-        captureCoordsStart(e);
-
-    }
-    else {
-        video.setAttribute('controls', 'true');
-        captureCoordsStart(e);
-    }
-}
-
-let origX = 0;
-let origY = 0;
-let isDown;
-//let drag = false;
-video.addEventListener('mousedown', (e) => {
-    //drag = false;
-    pressed = true;
-    removeControls(e);
-    captureCoordsStartFlag = true;
-
-    isDown = true;
-    origX = e.offsetX;
-    origY = e.offsetY;
-    blur.style.left = origX + 'px';
-    blur.style.top = origY + 'px';
-    console.log(origX, origY)
-
-
-
-
-
-});
-video.addEventListener('mousemove', (e) => {
-    //drag = true;
-    moved = true;
-    removeControls(e);
     let pointerX = e.offsetX;
     let pointerY = e.offsetY;
 
@@ -109,6 +75,67 @@ video.addEventListener('mousemove', (e) => {
 
     blur.style.width = Math.abs(origX - pointerX) + 'px';
     blur.style.height = Math.abs(origY - pointerY) + 'px';
+}
+
+
+const removeControls = (e) => {
+    if (pressed && moved) {
+        video.removeAttribute('controls');
+        blur.style.visibility = 'visible';
+        captureCoordsStart(e);
+
+    }
+    else {
+        video.setAttribute('controls', 'true');
+        blur.style.visibility = 'hidden';
+        captureCoordsStart(e);
+    }
+}
+
+
+let isDown;
+//let drag = false;
+video.addEventListener('mousedown', (e) => {
+    //drag = false;
+    pressed = true;
+    removeControls(e);
+    captureCoordsStartFlag = true;
+
+    // isDown = true;
+    // origX = e.offsetX;
+    // origY = e.offsetY;
+    // blur.style.left = origX + 'px';
+    // blur.style.top = origY + 'px';
+    //
+
+
+
+
+
+});
+video.addEventListener('mousemove', (e) => {
+    //drag = true;
+    moved = true;
+    removeControls(e);
+    // let pointerX = e.offsetX;
+    // let pointerY = e.offsetY;
+    //
+    // if(origX > pointerX){
+    //     blur.style.left =  pointerX + 'px';
+    // }
+    // else  {
+    //     blur.style.left =  origX + 'px';
+    // }
+    // if(origY > pointerY){
+    //     blur.style.top = pointerY + 'px';
+    // }
+    // else {
+    //     blur.style.top = origY + 'px';
+    // }
+    //
+    //
+    // blur.style.width = Math.abs(origX - pointerX) + 'px';
+    // blur.style.height = Math.abs(origY - pointerY) + 'px';
 
 
 });
