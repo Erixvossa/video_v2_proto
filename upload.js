@@ -6,6 +6,9 @@ const output = document.querySelector('.output');
 const fastOutput = document.querySelector('.fast-output');
 const popup = document.querySelector('.popup');
 
+const blur = document.querySelector('.blur');
+
+
 let imageWidth;
 console.log(document.documentElement.clientHeight);
 let videoHeight = (document.documentElement.clientHeight / 2) + "";
@@ -19,10 +22,32 @@ let screenWidth = Math.round(document.documentElement.scrollWidth / 60);
 let pressed = false;
 let moved = false;
 
+
+let captureCoordsEndFlag = false;
+let captureCoordsStartFlag = false;
 const captureCoordsStart = (e) => {
-    let x = e.offsetX;
-    let y = e.offsetY;
-    console.log(x,y)
+    let commonX = e.offsetX;
+    let commonY = e.offsetY;
+
+
+    if (captureCoordsStartFlag) {
+        captureCoordsStartFlag = false;
+        let startX = e.offsetX;
+        let startY = e.offsetY;
+        console.log(`Начало выделения ${startX}, ${startY}`);
+        blur.style.left = startX + 'px';
+        blur.style.top = startY + 'px';
+    }
+    else if (!captureCoordsStartFlag) {
+        console.log(staticX)
+    }
+    else if (captureCoordsEndFlag) {
+        captureCoordsEndFlag = false;
+        let x = e.offsetX;
+        let y = e.offsetY;
+        console.log(`Конец выделения ${x}, ${y}`);
+    }
+
 }
 
 
@@ -30,28 +55,34 @@ const removeControls = (e) => {
     if (pressed && moved) {
         video.removeAttribute('controls');
         captureCoordsStart(e);
+
     }
     else {
         video.setAttribute('controls', 'true');
+        captureCoordsStart(e);
     }
 }
 
-let drag = false;
+//let drag = false;
 video.addEventListener('mousedown', (e) => {
     //drag = false;
     pressed = true;
     removeControls(e);
+    captureCoordsStartFlag = true;
 });
 video.addEventListener('mousemove', (e) => {
     //drag = true;
     moved = true;
-    removeControls(e);
+    //removeControls(e);
 });
-document.addEventListener('mouseup', () => {
+document.addEventListener('mouseup', (e) => {
     //console.log(drag ? 'drag' : 'click');
+    if (moved && pressed) {
+        captureCoordsEndFlag = true;
+    }
     moved = false;
     pressed = false;
-    removeControls(pressed, moved);
+    removeControls(e);
 });
 
 

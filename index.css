@@ -172,3 +172,17 @@ video {
 .scene-list__container_active {
     border: 2px solid red;
 }
+
+.video-blur-container {
+    position: relative;
+}
+
+.blur {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 299px;
+    opacity: .7;
+    background-color: gray;
+}
