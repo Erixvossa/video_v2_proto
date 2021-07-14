@@ -26,28 +26,29 @@ let moved = false;
 let captureCoordsEndFlag = false;
 let captureCoordsStartFlag = false;
 const captureCoordsStart = (e) => {
-    let commonX = e.offsetX;
-    let commonY = e.offsetY;
+
 
 
     if (captureCoordsStartFlag) {
         captureCoordsStartFlag = false;
+
+
+
         let startX = e.offsetX;
         let startY = e.offsetY;
-        console.log(`Начало выделения ${startX}, ${startY}`);
-        blur.style.left = startX + 'px';
-        blur.style.top = startY + 'px';
-    }
-    else if (!captureCoordsStartFlag) {
-        console.log(staticX)
+        //console.log(`Начало выделения ${startX}, ${startY}`);
+        // blur.style.left = startX + 'px';
+        // blur.style.top = startY + 'px';
     }
     else if (captureCoordsEndFlag) {
         captureCoordsEndFlag = false;
-        let x = e.offsetX;
-        let y = e.offsetY;
-        console.log(`Конец выделения ${x}, ${y}`);
-    }
+        let endX = e.offsetX;
+        let endY = e.offsetY;
 
+
+
+        //console.log(`Конец выделения ${endX}, ${endY}`);
+    }
 }
 
 
@@ -63,17 +64,53 @@ const removeControls = (e) => {
     }
 }
 
+let origX = 0;
+let origY = 0;
+let isDown;
 //let drag = false;
 video.addEventListener('mousedown', (e) => {
     //drag = false;
     pressed = true;
     removeControls(e);
     captureCoordsStartFlag = true;
+
+    isDown = true;
+    origX = e.offsetX;
+    origY = e.offsetY;
+    blur.style.left = origX + 'px';
+    blur.style.top = origY + 'px';
+    console.log(origX, origY)
+
+
+
+
+
 });
 video.addEventListener('mousemove', (e) => {
     //drag = true;
     moved = true;
-    //removeControls(e);
+    removeControls(e);
+    let pointerX = e.offsetX;
+    let pointerY = e.offsetY;
+
+    if(origX > pointerX){
+        blur.style.left =  pointerX + 'px';
+    }
+    else  {
+        blur.style.left =  origX + 'px';
+    }
+    if(origY > pointerY){
+        blur.style.top = pointerY + 'px';
+    }
+    else {
+        blur.style.top = origY + 'px';
+    }
+
+
+    blur.style.width = Math.abs(origX - pointerX) + 'px';
+    blur.style.height = Math.abs(origY - pointerY) + 'px';
+
+
 });
 document.addEventListener('mouseup', (e) => {
     //console.log(drag ? 'drag' : 'click');
