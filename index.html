@@ -7,24 +7,43 @@
 </head>
 <body>
 <div class="page">
-    <div class="video-container">
-        <input id="file-input" type="file" accept="video/*">
+    <div class="main-container">
+        <div class="video-container">
+            <input id="file-input" type="file" accept="video/*">
 
-        <video id="video" width="300" height="300" controls>
+            <div class="video-blur-container">
+                <video id="video" height="300" width="500" controls>
+                </video>
+                <div class="blur"></div>
+            </div>
+            <br/>
+            <button id="cit" class="button">New chapter</button>
+            <br/>
+        </div>
+        <div class="popup">
+            <h2 class="popup__title">Add new chapter</h2>
+            <label class="popup__label">
+                <input class="popup__input" placeholder="Введите название главы">
+            </label>
+            <div class="popup__button">Save</div>
+        </div>
+        <div class="scene-selector">
 
-        </video>
-        <br/>
-        <button id="cit" class="button">New chapter</button>
-        <br/>
+        </div>
+        <div class="scene-list">
+
+        </div>
     </div>
-    <div class="scene-selector">
 
+    <div class="navigation-container">
+        <div class="output" id="output"></div>
+        <div class="fast-output"></div>
+        <div class="inaccurate-output"></div>
     </div>
 </div>
 
-<div class="output" id="output"></div>
-<div class="fast-output"></div>
-<div class="inaccurate-output"></div>
+
+
 <script src="./upload.js" type="module"></script>
 </body>
 </html>
