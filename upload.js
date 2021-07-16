@@ -8,9 +8,7 @@ export let sceneArr = [];
 //Массив сцена для передачи на бэк
 export let sceneArrToBack = [];
 
-let hidedVideo;
-let videoLength;
-let n = 0.25;
+
 
 
 
@@ -201,6 +199,9 @@ const startEditor = () => {
     fastOutput.innerHTML = '';
     document.querySelector('.inaccurate-output').innerHTML = '';
     document.querySelector('.scene-selector').innerHTML = '';
+    let hidedVideo;
+    let videoLength;
+    let n = 0.25;
 
     video.load();
 
@@ -241,11 +242,10 @@ const startEditor = () => {
                 popup.classList.add('popup_show');
             })
             const sceneDiv = document.createElement('div');
-            output.prepend(sceneDiv);
+            output.append(sceneDiv);
             //generatePopup(sceneDiv, scene.time);
             sceneDiv.prepend(scene.image);
         })
-
     }
 
     const renderSecond = () => {
@@ -264,7 +264,7 @@ const startEditor = () => {
 
     const renderThird = () => {
         for (let i = 0; i < sceneArr.length; i = i + Math.round(sceneArr.length / screenWidth)) {
-            console.log(i);
+            //console.log(i);
 
             const inaccurateOutput = document.querySelector('.inaccurate-output');
             const innacurateDiv = document.createElement('div');
@@ -272,26 +272,28 @@ const startEditor = () => {
             const clonedImg = sceneArr[i].image.cloneNode(true);
             innacurateDiv.prepend(clonedImg);
             innacurateDiv.querySelector('img').classList.add('width');
+            innacurateDiv.querySelector('img').classList.add('navigation');
             inaccurateOutput.append(innacurateDiv);
             //console.log(sceneArr[i].image);
             // console.log(videoTimeArr[i].time);
             innacurateDiv.addEventListener('click', () => {
                 video.currentTime = sceneArr[i].time;
             })
-            console.log(sceneArr[i].time);
+            //console.log(sceneArr[i].time);
         }
     }
 
 
 
-    let scenesCount;
+
 
 
     let i = 0;
     video.addEventListener('loadeddata', function () {
+
         this.currentTime = i;
         videoLength = video.duration;
-        scenesCount = Math.round(videoLength / n);
+        let scenesCount = Math.round(videoLength / n);
         console.log(scenesCount);
         const timesCounter = () => {
             let currentTime = 0;
@@ -302,19 +304,19 @@ const startEditor = () => {
                     sceneArr.push(scene);
                     currentTime += 0.25;
             }
-            console.log(sceneArr);
+            //console.log(sceneArr);
         }
         timesCounter();
 
-
-
-
         hidedVideo = video.cloneNode(true);
         document.querySelector('.hided-video').prepend(hidedVideo);
-        console.log(hidedVideo);
+        //console.log(hidedVideo);
+        hidedVideo.addEventListener('loadeddata', startHidedVideo);
+        //hidedVideo.load();
+
     });
 
-    function generateThumbnail(i, scaleFactor) {
+    function generateThumbnail(i, caller, scaleFactor) {
         if (scaleFactor == null) {
             scaleFactor = 0.125;
         }
@@ -332,24 +334,36 @@ const startEditor = () => {
         thecanvas.height = h;
         var context = thecanvas.getContext('2d');
         context.drawImage(video, 0, 0, w, h);
+        if (caller === 'video') {
+            context.drawImage(video, 0, 0, w, h);
+        }
+        else if (caller === 'hidedVideo') {
+            context.drawImage(hidedVideo, 0, 0, w, h);
+        }
         var dataURL = thecanvas.toDataURL();
 
 
         //create img
-        var img = document.createElement('img');
-        img.setAttribute('src', dataURL);
+        const image = document.createElement('img');
+        image.setAttribute('src', dataURL);
+        image.setAttribute('time', i);
         //Опциональный момент.
         //img.setAttribute('time', i);
 
-
+        //console.log(i)
 
         sceneArr.forEach((scene) => {
+
             if (scene.time === i) {
-                scene.image = img;
+                scene.image = image;
+                if (scene.image) {
+                    //output.prepend(scene.image)
+                }
             }
         })
 
         //sceneArr.push(scene);
+        //console.log(sceneArr);
         sortArrByTime(sceneArr);
 
     }
@@ -360,7 +374,7 @@ const startEditor = () => {
         let currentTime = video.currentTime;
         let numberTwo = currentTime.toFixed(2) * 100;
         let numberThree = ((Math.round(numberTwo / 25) * 25) / 100) + '';
-        //console.log(numberThree);
+        console.log(numberThree);
         document.querySelectorAll('.navigation').forEach((scene) => {
             if (scene.getAttribute('time') === numberThree) {
                 scene.classList.add('scene_active');
@@ -381,41 +395,65 @@ const startEditor = () => {
 
 
     let activeGenerator = true;
-
+    let step = 0;
     video.addEventListener('seeked', function (e) {
-
+        let caller = 'video';
         if (activeGenerator) {
             // now video has seeked and current frames will show
             // at the time as we expect
-            generateThumbnail(i);
-
+            generateThumbnail(step, caller);
             // when frame is captured, increase here by 5 seconds
             //i += 0.25;
-            //i += 0.75;
-            i += (Math.round(sceneArr.length / screenWidth)) * n;
-
-
-
-
-            //(let i = 0; i < sceneArr.length; i = i + Math.round(sceneArr.length / screenWidth))
+            step += (Math.round(sceneArr.length / screenWidth)) * n;
             // if we are not past end, seek to next interval
-            if (i <= this.duration) {
+            if (step <= this.duration) {
                 // this will trigger another seeked event
-                this.currentTime = i;
+                this.currentTime = step;
             } else {
                 activeGenerator = false;
                 // renderFirst();
                 renderSecond();
                 renderThird();
                 //console.log(sceneArr);
-
                 addListeners();
                 video.currentTime = 0;
-
                 // video.addEventListener('timeupdate', syncVideoToScene);
             }
         }
     });
+
+    let activeGeneratorHided = true;
+    let stepHided = 0;
+
+    const startHidedVideo = () => {
+        hidedVideo.currentTime = i;
+        hidedVideo.addEventListener('seeked', function (e) {
+            let caller = 'hidedVideo';
+            if (activeGeneratorHided) {
+                // now video has seeked and current frames will show
+                // at the time as we expect
+                //console.log(stepHided);
+                generateThumbnail(stepHided, caller);
+                // when frame is captured, increase here by 5 seconds
+                //i += 0.25;
+                stepHided += n;
+                // if we are not past end, seek to next interval
+                if (stepHided <= this.duration) {
+                    // this will trigger another seeked event
+                    this.currentTime = stepHided;
+                } else {
+                    activeGeneratorHided = false;
+                    renderFirst();
+                    video.addEventListener('timeupdate', syncVideoToScene);
+                    //console.log(sceneArr);
+                    //addListeners();
+                    // video.addEventListener('timeupdate', syncVideoToScene);
+                }
+            }
+        });
+
+    }
+
 
 
 }
