@@ -1,81 +1,21 @@
-const input = document.getElementById('file-input');
-const video = document.getElementById('video');
-const videoSource = document.createElement('source');
-const captureButton = document.querySelector('#cit');
-const output = document.querySelector('.output');
-const fastOutput = document.querySelector('.fast-output');
-const popup = document.querySelector('.popup');
+import {input, blur, video, videoSource, popup, output, fastOutput, videoHeight} from './src/variablex.js';
 
-const blur = document.querySelector('.blur');
+import { sortArrByTime, captureCoordsStart, captureCoordsEndFlag, captureCoordsStartFlag, setCaptureCoordsEndFlag, setcaptureCoordsStartFlag } from './src/utils.js';
+
+//Массив всех сцен для фронта
+export let sceneArr = [];
+
+//Массив сцена для передачи на бэк
+export let sceneArrToBack = [];
+
 
 
 let imageWidth;
-console.log(document.documentElement.clientHeight);
-let videoHeight = (document.documentElement.clientHeight / 2) + "";
-video.setAttribute('height', videoHeight)
 
-let sceneArr = [];
-let sceneArrToBack = [];
+video.setAttribute('height', videoHeight);
+
 
 let screenWidth = Math.round(document.documentElement.scrollWidth / 60);
-
-let pressed = false;
-let moved = false;
-
-let origX = 0;
-let origY = 0;
-let captureCoordsEndFlag = false;
-let captureCoordsStartFlag = false;
-const captureCoordsStart = (e) => {
-
-
-
-    if (captureCoordsStartFlag) {
-        captureCoordsStartFlag = false;
-
-        origX = e.offsetX;
-        origY = e.offsetY;
-
-        blur.style.left = origX + 'px';
-        blur.style.top = origY + 'px';
-
-
-
-        let startX = e.offsetX;
-        let startY = e.offsetY;
-        console.log(`Начало выделения ${origX}, ${origY}`);
-        // blur.style.left = startX + 'px';
-        // blur.style.top = startY + 'px';
-    }
-    else if (captureCoordsEndFlag) {
-        captureCoordsEndFlag = false;
-        let endX = e.offsetX;
-        let endY = e.offsetY;
-
-
-        //console.log(`Конец выделения ${endX}, ${endY}`);
-    }
-
-    let pointerX = e.offsetX;
-    let pointerY = e.offsetY;
-
-    if(origX > pointerX){
-        blur.style.left =  pointerX + 'px';
-    }
-    else  {
-        blur.style.left =  origX + 'px';
-    }
-    if(origY > pointerY){
-        blur.style.top = pointerY + 'px';
-    }
-    else {
-        blur.style.top = origY + 'px';
-    }
-
-
-    blur.style.width = Math.abs(origX - pointerX) + 'px';
-    blur.style.height = Math.abs(origY - pointerY) + 'px';
-}
 
 
 const removeControls = (e) => {
@@ -83,7 +23,6 @@ const removeControls = (e) => {
         video.removeAttribute('controls');
         blur.style.visibility = 'visible';
         captureCoordsStart(e);
-
     }
     else {
         video.setAttribute('controls', 'true');
@@ -92,57 +31,26 @@ const removeControls = (e) => {
     }
 }
 
+let pressed = false;
+let moved = false;
 
-let isDown;
-//let drag = false;
+
+
 video.addEventListener('mousedown', (e) => {
-    //drag = false;
     pressed = true;
     removeControls(e);
-    captureCoordsStartFlag = true;
-
-    // isDown = true;
-    // origX = e.offsetX;
-    // origY = e.offsetY;
-    // blur.style.left = origX + 'px';
-    // blur.style.top = origY + 'px';
-    //
-
-
-
-
+    setcaptureCoordsStartFlag(true);
 
 });
 video.addEventListener('mousemove', (e) => {
-    //drag = true;
     moved = true;
     removeControls(e);
-    // let pointerX = e.offsetX;
-    // let pointerY = e.offsetY;
-    //
-    // if(origX > pointerX){
-    //     blur.style.left =  pointerX + 'px';
-    // }
-    // else  {
-    //     blur.style.left =  origX + 'px';
-    // }
-    // if(origY > pointerY){
-    //     blur.style.top = pointerY + 'px';
-    // }
-    // else {
-    //     blur.style.top = origY + 'px';
-    // }
-    //
-    //
-    // blur.style.width = Math.abs(origX - pointerX) + 'px';
-    // blur.style.height = Math.abs(origY - pointerY) + 'px';
-
-
 });
 document.addEventListener('mouseup', (e) => {
-    //console.log(drag ? 'drag' : 'click');
     if (moved && pressed) {
-        captureCoordsEndFlag = true;
+        setCaptureCoordsEndFlag(true);
+        e.preventDefault();
+        console.log('отпустили.')
     }
     moved = false;
     pressed = false;
@@ -172,14 +80,8 @@ const generateScene = (sceneName) => {
 
     sceneArrToBack.push(scene);
 
-    function sortByTime(arr) {
-        arr.sort((a, b) => a.time < b.time ? 1 : -1);
-    }
-
-    sortByTime(sceneArrToBack);
+    sortArrByTime(sceneArrToBack);
     console.log(sceneArrToBack);
-
-
 }
 
 const renderScenes = () => {
@@ -235,14 +137,8 @@ const renderScenes = () => {
         sceneListSceneContainer.append(scene.image);
         sceneListSceneContainer.setAttribute('time', scene.time);
         sceneListSceneContainer.addEventListener('click', () => {
-            // document.querySelectorAll('scene-list__container').forEach((sel) => {
-            //     sel.classList.remove('scene-list__container_active');
-            // })
-            //sceneListSceneContainer.classList.add('scene-list__container_active')
             video.currentTime = sceneListSceneContainer.getAttribute('time');
         })
-
-
     })
 }
 
@@ -257,29 +153,13 @@ popup.querySelector('.popup__button').addEventListener('click', renderScenesPopu
 
 
 
-
-const renderScenesListener = (e) => {
-    e.preventDefault();
-    //generateThumbnail(video.currentTime);
-    //renderFirst();
-    let sceneName = '';
-    generateScene(sceneName);
-    renderScenes();
-}
-
-captureButton.addEventListener('click', renderScenesListener);
-
-
 document.addEventListener('click', (e) => {
     if (e.target !== document.querySelector('.scene_active') && e.target !== document.querySelector('.popup__input') && e.target !== document.querySelector('.popup__button')) {
         popup.classList.remove('popup_show');
     }
 }, true);
 
-function removeEventListeners () {
-    captureButton.removeEventListener('click', renderScenesListener);
-    popup.querySelector('.popup__button').removeEventListener('click', renderScenesPopupListener);
-}
+
 
 
 
@@ -293,6 +173,7 @@ input.addEventListener('change', function() {
 
     reader.onload = function (e) {
         videoSource.setAttribute('src', e.target.result);
+        //videoSource.setAttribute('src', 'https://appstorespy.com/s/ftue/blured.mp4');
         video.appendChild(videoSource);
         startEditor();
         //video.load();
@@ -304,24 +185,7 @@ input.addEventListener('change', function() {
     };
 
     reader.readAsDataURL(files[0]);
-
-
-
 });
-
-// const generatePopup = (el, time) => {
-//     const popup = document.createElement('div');
-//     const sceneTime = document.createElement('p');
-//     const button = document.createElement('div');
-//     button.classList.add('popup__button');
-//     button.textContent = 'Добавить сцену';
-//     sceneTime.textContent = time;
-//     popup.classList.add('popup');
-//     popup.append(sceneTime);
-//     popup.append(button);
-//     el.prepend(popup);
-// }
-
 
 const startEditor = () => {
 
@@ -333,8 +197,6 @@ const startEditor = () => {
     document.querySelector('.scene-selector').innerHTML = '';
 
     video.load();
-
-
 
 
     const addListeners = () => {
@@ -358,46 +220,19 @@ const startEditor = () => {
                 } else if (el.parentElement === document.querySelector('.output')) {
 
                 }
-                // sceneImg.forEach((scene) => {
-                //     scene.classList.remove('scene_active');
-                // });
-                //el.classList.add('scene_active');
-                //
-                // if (document.querySelector('.inaccurate-output').getAttribute('time') === sceneTime) {
-                //     const innacurateSceneImg =
-                // }
-
             });
         });
-
-
     };
-
 
     const renderFirst = () => {
         output.innerHTML = "";
         sceneArr.forEach((scene) => {
-            //generatePopup(scene);
-
             scene.image.classList.add('scene');
             scene.image.classList.add('navigation');
             scene.image.setAttribute('time', scene.time);
             scene.image.addEventListener('click', () => {
                 video.currentTime = scene.time;
                 popup.classList.add('popup_show');
-                // document.querySelectorAll('.scene').forEach((sel) => {
-                //     sel.classList.remove('scene_active');
-                // });
-                // scene.image.classList.add('scene_active');
-
-
-                // document.querySelectorAll('.fastDiv').forEach((el) => {
-                //     if (el.getAttribute('time') === scene.time) {
-                //         el.classList.add('fastDiv_active');
-                //     }
-                // })
-
-
             })
             const sceneDiv = document.createElement('div');
             output.prepend(sceneDiv);
@@ -422,8 +257,6 @@ const startEditor = () => {
     }
 
     const renderThird = () => {
-
-
         for (let i = 0; i < sceneArr.length; i = i + Math.round(sceneArr.length / screenWidth)) {
             const inaccurateOutput = document.querySelector('.inaccurate-output');
             const innacurateDiv = document.createElement('div');
@@ -434,19 +267,18 @@ const startEditor = () => {
             inaccurateOutput.prepend(innacurateDiv);
             //console.log(sceneArr[i].image);
             // console.log(videoTimeArr[i].time);
-
             innacurateDiv.addEventListener('click', () => {
                 video.currentTime = sceneArr[i].time;
             })
             //console.log(sceneArr[i].time);
-
         }
-
-
     }
 
 
-    var i = 0;
+
+
+
+    let i = 0;
     video.addEventListener('loadeddata', function () {
         this.currentTime = i;
     });
@@ -466,7 +298,6 @@ const startEditor = () => {
         // для прокрутки верхнего ряда
         imageWidth = w;
 
-
         thecanvas.height = h;
         var context = thecanvas.getContext('2d');
         context.drawImage(video, 0, 0, w, h);
@@ -485,20 +316,35 @@ const startEditor = () => {
         scene.time = i;
 
         sceneArr.push(scene);
+        sortArrByTime(sceneArr);
 
-        function sortByTime(arr) {
-            arr.sort((a, b) => a.time < b.time ? 1 : -1);
-        }
-
-        sortByTime(sceneArr);
-
-
-        //append img in container div
-        // document.querySelector('.output').appendChild(img);
-        // img.addEventListener('click', () => {
-        //     video.currentTime = i;
-        // })
     }
+
+
+
+    const syncVideoToScene = () => {
+        let currentTime = video.currentTime;
+        let numberTwo = currentTime.toFixed(2) * 100;
+        let numberThree = ((Math.round(numberTwo / 25) * 25) / 100) + '';
+        //console.log(numberThree);
+        document.querySelectorAll('.navigation').forEach((scene) => {
+            if (scene.getAttribute('time') === numberThree) {
+                scene.classList.add('scene_active');
+                if (scene.parentElement.parentElement === document.querySelector('.output')) {
+
+                    const targetWidth = (((scene.getAttribute('time') / 0.25) - 5) * imageWidth);
+                    const width = targetWidth;
+                    document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
+                }
+            }
+            else {
+                scene.classList.remove('scene_active');
+            }
+        })
+    }
+
+
+
 
     let activeGenerator = true;
 
@@ -526,211 +372,14 @@ const startEditor = () => {
                 addListeners();
                 video.currentTime = 0;
 
-                video.addEventListener('timeupdate', () => {
-                    let currentTime = video.currentTime;
-                    let numberTwo = currentTime.toFixed(2) * 100;
-                    let numberThree = ((Math.round(numberTwo / 25) * 25) / 100) + '';
-                    //console.log(numberThree);
-                    document.querySelectorAll('.navigation').forEach((scene) => {
-                        if (scene.getAttribute('time') === numberThree) {
-                            scene.classList.add('scene_active');
-                            if (scene.parentElement.parentElement === document.querySelector('.output')) {
-
-                                const targetWidth = (((scene.getAttribute('time') / 0.25) - 5) * imageWidth);
-                                const width = targetWidth;
-                                document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
-                            }
-                        }
-                        else {
-                            scene.classList.remove('scene_active');
-                        }
-                    })
-
-
-                })
+                video.addEventListener('timeupdate', syncVideoToScene);
             }
         }
     });
 
 
-
-
-
-
-
 }
 
 
-// var videoId = 'video';
-// var scaleFactor = 0.125;
-// var snapshots = [];
-// let videoTimeArr = [];
-// let sceneArr = {};
-//
-//
-//
-// const captureButton = document.querySelector('#cit');
-//
-// /**
-//  * Captures a image frame from the provided video element.
-//  *
-//  * @param {Video} video HTML5 video element from where the image frame will be captured.
-//  * @param {Number} scaleFactor Factor to scale the canvas element that will be return. This is an optional parameter.
-//  *
-//  * @return {Canvas}
-//  */
-// function capture(video, scaleFactor) {
-//     if (scaleFactor == null) {
-//         scaleFactor = 1;
-//     }
-//     var w = video.videoWidth * scaleFactor;
-//     var h = video.videoHeight * scaleFactor;
-//     var canvas = document.createElement('canvas');
-//     canvas.width = w;
-//     canvas.height = h;
-//     var ctx = canvas.getContext('2d');
-//     ctx.drawImage(video, 0, 0, w, h);
-//     return canvas;
-// }
-//
-// /**
-//  * Invokes the <code>capture</code> function and attaches the canvas element to the DOM.
-//  */
-//
-// let screenWidth = Math.round(document.documentElement.scrollWidth / 40);
-// console.log(screenWidth);
-//
-// const fillInaccurate = () => {
-//     for (let i = 0; i < videoTimeArr.length; i = i + Math.round(videoTimeArr.length / screenWidth) ) {
-//         const inaccurateOutput = document.querySelector('.inaccurate-output');
-//         const innacurateDiv = document.createElement('div');
-//         innacurateDiv.classList.add('inaccurate-output_div');
-//         innacurateDiv.prepend(videoTimeArr[i].canvas);
-//         innacurateDiv.querySelector('canvas').classList.add('width');
-//         inaccurateOutput.prepend(innacurateDiv);
-//         //console.log(videoTimeArr[i].time);
-//
-//         innacurateDiv.addEventListener('click', () => {
-//             video.currentTime = videoTimeArr[i].time;
-//         })
-//
-//     }
-// }
-//
-//
-// let counter = 0;
-// function shoot(videoCurrentTime) {
-//     //console.log(videoCurrentTime);
-//     var video = document.getElementById(videoId);
-//     var output = document.getElementById('output');
-//     const fastOutput = document.querySelector('.fast-output');
-//     var canvas = capture(video, scaleFactor);
-//     canvas.onclick = function() {
-//         window.open(this.toDataURL(image/jpg));
-//     };
-//     snapshots.unshift(canvas);
-//     output.innerHTML = '';
-//     fastOutput.innerHTML = '';
-//
-//     let scene = {};
-//     scene.canvas = canvas;
-//     scene.time = videoCurrentTime;
-//
-//
-//     videoTimeArr.unshift(scene);
-//     //console.log(videoTimeArr);
-//
-//     // arr = [1, 2, 3];
-//     // arr.forEach(function(i, idx, array){
-//     //     if (idx === array.length - 1){
-//     //         console.log("Last callback call at index " + idx + " with value " + i );
-//     //     }
-//     // });
-//
-//
-//
-//     videoTimeArr.forEach((scene) => {
-//             const div = document.createElement('div');
-//             div.classList.add('scene');
-//             div.append(scene.canvas)
-//             div.setAttribute('time', scene.time);
-//             output.prepend(div);
-//
-//             const fastDiv = document.createElement('div');
-//             fastDiv.classList.add('fastDiv');
-//             fastDiv.textContent = '';
-//             fastOutput.prepend(fastDiv)
-//
-//
-//             fastDiv.addEventListener('click', () => {
-//                 video.currentTime = scene.time;
-//                 div.classList.toggle('scene_active');
-//             })
-//
-//             div.addEventListener('click', () => {
-//                 video.currentTime = scene.time;
-//                 div.classList.toggle('scene_active');
-//             })
-//
-//             // if (video.currentTime % 2 === 0 ) {
-//             //     console.log(video.currentTime);
-//             // }
-//             //console.log(scene.time)
-//
-//             // if (scene.time < 10) {
-//             //     counter += 1;
-//             //     console.log(counter)
-//             // }
-//         // console.log(videoTimeArr.length)
-//     })
-//
-//     // for (let i = 0; i < videoTimeArr.length; i = videoTimeArr.length / 10 ) {
-//     //     console.log(videoTimeArr[i]);
-//     // }
-//
-//
-//
-//
-//     //console.log(videoTimeArr.length)
-//     // snapshots.forEach((snapshot) => {
-//     //     const div = document.createElement('div');
-//     //     div.append(snapshot)
-//     //     output.append(div);
-//     //
-//     //
-//     //
-//     //     //div.setAttribute('time', videoCurrentTime);
-//     // })
-//
-//
-// }
-//
-// captureButton.addEventListener('click', (e) => {
-//     e.preventDefault();
-//     shoot();
-// })
-//
-// let screens = {};
-//
-//
-//
-//
-// video.addEventListener('loadeddata', () => {
-//     console.log(video.duration)
-//         const shootInterval = () => {
-//             const videoCurrentTime = video.currentTime;
-//             shoot(videoCurrentTime);
-//             video.currentTime += 0.25;
-//             console.log(videoTimeArr)
-//
-//                 if (video.currentTime + 0.25 >= video.duration) {
-//                 clearInterval(interval)
-//                 fillInaccurate();
-//             }
-//         }
-//
-//
-//         const interval = setInterval(shootInterval, 150);
-// })
-//
-// console.log(videoTimeArr.length)
+//startEditor();
+
