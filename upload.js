@@ -8,6 +8,11 @@ export let sceneArr = [];
 //Массив сцена для передачи на бэк
 export let sceneArrToBack = [];
 
+let hidedVideo;
+let videoLength;
+let n = 0.25;
+
+
 
 
 let imageWidth;
@@ -243,17 +248,18 @@ const startEditor = () => {
     }
 
     const renderSecond = () => {
-        sceneArr.forEach((scene) => {
-            const div = document.createElement('div');
-            div.setAttribute('time', scene.time)
-            div.classList.add('fastDiv');
-            div.classList.add('navigation');
-            div.textContent = '';
-            div.addEventListener('click', () => {
-                video.currentTime = scene.time;
-            })
-            fastOutput.prepend(div);
-        })
+        // sceneArr.forEach((scene) => {
+        //     const div = document.createElement('div');
+        //     div.setAttribute('time', scene.time)
+        //     div.classList.add('fastDiv');
+        //     div.classList.add('navigation');
+        //     div.textContent = '';
+        //     div.addEventListener('click', () => {
+        //         video.currentTime = scene.time;
+        //     })
+        //     fastOutput.prepend(div);
+        // })
+        console.log(videoLength);
     }
 
     const renderThird = () => {
@@ -276,11 +282,39 @@ const startEditor = () => {
 
 
 
+    let newArr = []
+    let scenesCount;
+
+
+
+
 
 
     let i = 0;
     video.addEventListener('loadeddata', function () {
         this.currentTime = i;
+        videoLength = video.duration;
+        scenesCount = Math.round(videoLength / n);
+        console.log(scenesCount);
+        const timesCounter = () => {
+            let currentTime = 0;
+            for (let i = 0; i < scenesCount; i ++) {
+                console.log(i)
+                    let scene = {}
+                    scene.time = currentTime;
+                    sceneArr.push(scene);
+                    currentTime = currentTime + 0.25;
+            }
+            console.log(sceneArr);
+        }
+        timesCounter();
+
+
+
+
+        hidedVideo = video.cloneNode(true);
+        document.querySelector('.hided-video').prepend(hidedVideo);
+        console.log(hidedVideo);
     });
 
     function generateThumbnail(i, scaleFactor) {
@@ -315,7 +349,13 @@ const startEditor = () => {
         scene.image = img;
         scene.time = i;
 
-        sceneArr.push(scene);
+        sceneArr.forEach((scene) => {
+            if (scene.time === i) {
+                scene.image = img;
+            }
+        })
+
+        //sceneArr.push(scene);
         sortArrByTime(sceneArr);
 
     }
@@ -357,6 +397,7 @@ const startEditor = () => {
 
             // when frame is captured, increase here by 5 seconds
             i += 0.25;
+            //i += 0.5;
 
             // if we are not past end, seek to next interval
             if (i <= this.duration) {
@@ -364,15 +405,15 @@ const startEditor = () => {
                 this.currentTime = i;
             } else {
                 activeGenerator = false;
-                renderFirst();
-                renderSecond();
+                // renderFirst();
+                //renderSecond();
                 renderThird();
                 //console.log(sceneArr);
 
                 addListeners();
                 video.currentTime = 0;
 
-                video.addEventListener('timeupdate', syncVideoToScene);
+                // video.addEventListener('timeupdate', syncVideoToScene);
             }
         }
     });

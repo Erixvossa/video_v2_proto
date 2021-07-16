@@ -187,3 +187,7 @@ video {
     background-color: gray;
     visibility: visible;
 }
+
+.hided-video {
+    display: none;
+}
