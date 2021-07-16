@@ -1,4 +1,4 @@
-import {input, blur, video, captureButton, videoSource, popup, output, fastOutput, videoHeight} from './src/variablex.js';
+import {input, blur, video, videoSource, popup, output, fastOutput, videoHeight} from './src/variablex.js';
 
 import { sortArrByTime, captureCoordsStart, captureCoordsEndFlag, captureCoordsStartFlag, setCaptureCoordsEndFlag, setcaptureCoordsStartFlag } from './src/utils.js';
 
@@ -80,11 +80,8 @@ const generateScene = (sceneName) => {
 
     sceneArrToBack.push(scene);
 
-
     sortArrByTime(sceneArrToBack);
     console.log(sceneArrToBack);
-
-
 }
 
 const renderScenes = () => {
@@ -142,8 +139,6 @@ const renderScenes = () => {
         sceneListSceneContainer.addEventListener('click', () => {
             video.currentTime = sceneListSceneContainer.getAttribute('time');
         })
-
-
     })
 }
 
@@ -158,27 +153,13 @@ popup.querySelector('.popup__button').addEventListener('click', renderScenesPopu
 
 
 
-
-const renderScenesListener = (e) => {
-    e.preventDefault();
-    let sceneName = '';
-    generateScene(sceneName);
-    renderScenes();
-}
-
-captureButton.addEventListener('click', renderScenesListener);
-
-
 document.addEventListener('click', (e) => {
     if (e.target !== document.querySelector('.scene_active') && e.target !== document.querySelector('.popup__input') && e.target !== document.querySelector('.popup__button')) {
         popup.classList.remove('popup_show');
     }
 }, true);
 
-function removeEventListeners () {
-    captureButton.removeEventListener('click', renderScenesListener);
-    popup.querySelector('.popup__button').removeEventListener('click', renderScenesPopupListener);
-}
+
 
 
 
@@ -218,8 +199,6 @@ const startEditor = () => {
     video.load();
 
 
-
-
     const addListeners = () => {
         const navigation = document.querySelectorAll('.navigation');
 
@@ -243,10 +222,7 @@ const startEditor = () => {
                 }
             });
         });
-
-
     };
-
 
     const renderFirst = () => {
         output.innerHTML = "";
@@ -281,8 +257,6 @@ const startEditor = () => {
     }
 
     const renderThird = () => {
-
-
         for (let i = 0; i < sceneArr.length; i = i + Math.round(sceneArr.length / screenWidth)) {
             const inaccurateOutput = document.querySelector('.inaccurate-output');
             const innacurateDiv = document.createElement('div');
@@ -293,19 +267,18 @@ const startEditor = () => {
             inaccurateOutput.prepend(innacurateDiv);
             //console.log(sceneArr[i].image);
             // console.log(videoTimeArr[i].time);
-
             innacurateDiv.addEventListener('click', () => {
                 video.currentTime = sceneArr[i].time;
             })
             //console.log(sceneArr[i].time);
-
         }
-
-
     }
 
 
-    var i = 0;
+
+
+
+    let i = 0;
     video.addEventListener('loadeddata', function () {
         this.currentTime = i;
     });
@@ -343,13 +316,32 @@ const startEditor = () => {
         scene.time = i;
 
         sceneArr.push(scene);
-
-
-
         sortArrByTime(sceneArr);
 
     }
 
+
+
+    const syncVideoToScene = () => {
+        let currentTime = video.currentTime;
+        let numberTwo = currentTime.toFixed(2) * 100;
+        let numberThree = ((Math.round(numberTwo / 25) * 25) / 100) + '';
+        //console.log(numberThree);
+        document.querySelectorAll('.navigation').forEach((scene) => {
+            if (scene.getAttribute('time') === numberThree) {
+                scene.classList.add('scene_active');
+                if (scene.parentElement.parentElement === document.querySelector('.output')) {
+
+                    const targetWidth = (((scene.getAttribute('time') / 0.25) - 5) * imageWidth);
+                    const width = targetWidth;
+                    document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
+                }
+            }
+            else {
+                scene.classList.remove('scene_active');
+            }
+        })
+    }
 
 
 
@@ -380,28 +372,7 @@ const startEditor = () => {
                 addListeners();
                 video.currentTime = 0;
 
-                video.addEventListener('timeupdate', () => {
-                    let currentTime = video.currentTime;
-                    let numberTwo = currentTime.toFixed(2) * 100;
-                    let numberThree = ((Math.round(numberTwo / 25) * 25) / 100) + '';
-                    //console.log(numberThree);
-                    document.querySelectorAll('.navigation').forEach((scene) => {
-                        if (scene.getAttribute('time') === numberThree) {
-                            scene.classList.add('scene_active');
-                            if (scene.parentElement.parentElement === document.querySelector('.output')) {
-
-                                const targetWidth = (((scene.getAttribute('time') / 0.25) - 5) * imageWidth);
-                                const width = targetWidth;
-                                document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
-                            }
-                        }
-                        else {
-                            scene.classList.remove('scene_active');
-                        }
-                    })
-
-
-                })
+                video.addEventListener('timeupdate', syncVideoToScene);
             }
         }
     });

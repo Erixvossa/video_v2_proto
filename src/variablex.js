@@ -1,7 +1,6 @@
 export const input = document.getElementById('file-input');
 export const video = document.getElementById('video');
 export const videoSource = document.createElement('source');
-export const captureButton = document.querySelector('#cit');
 export const output = document.querySelector('.output');
 export const fastOutput = document.querySelector('.fast-output');
 export const popup = document.querySelector('.popup');

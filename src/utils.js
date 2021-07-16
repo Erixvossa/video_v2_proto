@@ -17,6 +17,8 @@ export let lastCoord = {
 
 
 
+
+
 export let captureCoordsEndFlag = false;
 export const setCaptureCoordsEndFlag = (bool) => {
     captureCoordsEndFlag = bool;
