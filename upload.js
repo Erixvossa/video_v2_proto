@@ -21,6 +21,7 @@ video.setAttribute('height', videoHeight);
 
 
 let screenWidth = Math.round(document.documentElement.scrollWidth / 60);
+console.log(screenWidth);
 
 
 const removeControls = (e) => {
@@ -248,46 +249,42 @@ const startEditor = () => {
     }
 
     const renderSecond = () => {
-        // sceneArr.forEach((scene) => {
-        //     const div = document.createElement('div');
-        //     div.setAttribute('time', scene.time)
-        //     div.classList.add('fastDiv');
-        //     div.classList.add('navigation');
-        //     div.textContent = '';
-        //     div.addEventListener('click', () => {
-        //         video.currentTime = scene.time;
-        //     })
-        //     fastOutput.prepend(div);
-        // })
-        console.log(videoLength);
+        sceneArr.forEach((scene) => {
+            const div = document.createElement('div');
+            div.setAttribute('time', scene.time)
+            div.classList.add('fastDiv');
+            div.classList.add('navigation');
+            div.textContent = '';
+            div.addEventListener('click', () => {
+                video.currentTime = scene.time;
+            })
+            fastOutput.append(div);
+        })
     }
 
     const renderThird = () => {
         for (let i = 0; i < sceneArr.length; i = i + Math.round(sceneArr.length / screenWidth)) {
+            console.log(i);
+
             const inaccurateOutput = document.querySelector('.inaccurate-output');
             const innacurateDiv = document.createElement('div');
             innacurateDiv.classList.add('inaccurate-output_div');
             const clonedImg = sceneArr[i].image.cloneNode(true);
             innacurateDiv.prepend(clonedImg);
             innacurateDiv.querySelector('img').classList.add('width');
-            inaccurateOutput.prepend(innacurateDiv);
+            inaccurateOutput.append(innacurateDiv);
             //console.log(sceneArr[i].image);
             // console.log(videoTimeArr[i].time);
             innacurateDiv.addEventListener('click', () => {
                 video.currentTime = sceneArr[i].time;
             })
-            //console.log(sceneArr[i].time);
+            console.log(sceneArr[i].time);
         }
     }
 
 
 
-    let newArr = []
     let scenesCount;
-
-
-
-
 
 
     let i = 0;
@@ -299,11 +296,11 @@ const startEditor = () => {
         const timesCounter = () => {
             let currentTime = 0;
             for (let i = 0; i < scenesCount; i ++) {
-                console.log(i)
+                //console.log(i)
                     let scene = {}
                     scene.time = currentTime;
                     sceneArr.push(scene);
-                    currentTime = currentTime + 0.25;
+                    currentTime += 0.25;
             }
             console.log(sceneArr);
         }
@@ -345,9 +342,6 @@ const startEditor = () => {
         //img.setAttribute('time', i);
 
 
-        let scene = {};
-        scene.image = img;
-        scene.time = i;
 
         sceneArr.forEach((scene) => {
             if (scene.time === i) {
@@ -396,9 +390,14 @@ const startEditor = () => {
             generateThumbnail(i);
 
             // when frame is captured, increase here by 5 seconds
-            i += 0.25;
-            //i += 0.5;
+            //i += 0.25;
+            //i += 0.75;
+            i += (Math.round(sceneArr.length / screenWidth)) * n;
 
+
+
+
+            //(let i = 0; i < sceneArr.length; i = i + Math.round(sceneArr.length / screenWidth))
             // if we are not past end, seek to next interval
             if (i <= this.duration) {
                 // this will trigger another seeked event
@@ -406,7 +405,7 @@ const startEditor = () => {
             } else {
                 activeGenerator = false;
                 // renderFirst();
-                //renderSecond();
+                renderSecond();
                 renderThird();
                 //console.log(sceneArr);
 

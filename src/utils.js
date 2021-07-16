@@ -29,7 +29,7 @@ export const setcaptureCoordsStartFlag = (bool) => {
 }
 
 export const sortArrByTime = (arr) => {
-    arr.sort((a, b) => a.time < b.time ? 1 : -1);
+    arr.sort((a, b) => a.time > b.time ? 1 : -1);
 }
 
 export const captureCoordsStart = (e) => {
