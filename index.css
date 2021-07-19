@@ -41,7 +41,7 @@ video {
     border: 2px solid red;
 }
 
-.scene:hover {
+.navigation:hover {
     border: 2px solid greenyellow;
 }
 
@@ -74,9 +74,9 @@ video {
     flex-grow: 1;
 }
 
-.inaccurate-output_div:hover {
-    border: 2px solid greenyellow;
-}
+/*.inaccurate-output_div:hover {*/
+/*    border: 2px solid greenyellow;*/
+/*}*/
 
 .width {
     width: 100%;
@@ -186,4 +186,13 @@ video {
     opacity: .7;
     background-color: gray;
     visibility: visible;
+}
+
+.hided-video {
+    display: none;
+}
+
+.navigation {
+    display: flex;
+    box-sizing: border-box;
 }
