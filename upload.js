@@ -19,7 +19,7 @@ video.setAttribute('height', videoHeight);
 
 
 let screenWidth = Math.round(document.documentElement.scrollWidth / 60);
-console.log(screenWidth);
+//console.log(screenWidth);
 
 
 const removeControls = (e) => {
@@ -183,10 +183,10 @@ input.addEventListener('change', function() {
         //video.load();
         //video.play();
     };
-
-    reader.onprogress = function (e) {
-        console.log('progress: ', Math.round((e.loaded * 100) / e.total));
-    };
+    //Отображание прогресса загрузки видео
+    // reader.onprogress = function (e) {
+    //     console.log('progress: ', Math.round((e.loaded * 100) / e.total));
+    // };
 
     reader.readAsDataURL(files[0]);
 });
@@ -220,7 +220,7 @@ const startEditor = () => {
                     }
                 });
                 if (el.parentElement !== document.querySelector('.output')) {
-                    console.log(sceneTime);
+                    //console.log(sceneTime);
                     const targetWidth = (((sceneTime / 0.25) - 5) * imageWidth);
                     const width = targetWidth;
                     document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
@@ -234,17 +234,19 @@ const startEditor = () => {
     const renderFirst = () => {
         output.innerHTML = "";
         sceneArr.forEach((scene) => {
-            scene.image.classList.add('scene');
-            scene.image.classList.add('navigation');
-            scene.image.setAttribute('time', scene.time);
-            scene.image.addEventListener('click', () => {
-                video.currentTime = scene.time;
-                popup.classList.add('popup_show');
-            })
-            const sceneDiv = document.createElement('div');
-            output.append(sceneDiv);
-            //generatePopup(sceneDiv, scene.time);
-            sceneDiv.prepend(scene.image);
+            if (scene.image) {
+                scene.image.classList.add('scene');
+                scene.image.classList.add('navigation');
+                scene.image.setAttribute('time', scene.time);
+                scene.image.addEventListener('click', () => {
+                    video.currentTime = scene.time;
+                    popup.classList.add('popup_show');
+                })
+                const sceneDiv = document.createElement('div');
+                output.append(sceneDiv);
+                //generatePopup(sceneDiv, scene.time);
+                sceneDiv.prepend(scene.image);
+            }
         })
     }
 
@@ -263,6 +265,7 @@ const startEditor = () => {
     }
 
     const renderThird = () => {
+        //console.log(sceneArr);
         for (let i = 0; i < sceneArr.length; i = i + Math.round(sceneArr.length / screenWidth)) {
             //console.log(i);
 
@@ -327,7 +330,6 @@ const startEditor = () => {
         //generate thumbnail URL data
         let thecanvas = document.createElement('canvas');
         thecanvas.width = w;
-
         // для прокрутки верхнего ряда
         imageWidth = w;
 
@@ -355,10 +357,25 @@ const startEditor = () => {
         sceneArr.forEach((scene) => {
 
             if (scene.time === i) {
+                //console.log(scene)
                 scene.image = image;
-                if (scene.image) {
-                    //output.prepend(scene.image)
-                }
+                // if (scene.image) {
+                //     //if (scene.image.getAttribute('time' === )) {
+                //console.log(scene);
+                        //console.log(scene.time)
+                        // scene.image.classList.add('scene');
+                        // scene.image.classList.add('navigation');
+                        // scene.image.setAttribute('time', scene.time);
+                        // scene.image.addEventListener('click', () => {
+                        //     video.currentTime = scene.time;
+                        //     popup.classList.add('popup_show');
+                        // })
+                        // const sceneDiv = document.createElement('div');
+                        // output.append(sceneDiv);
+                        // //generatePopup(sceneDiv, scene.time);
+                        // sceneDiv.prepend(scene.image);
+                //     //}
+                // }
             }
         })
 
@@ -374,7 +391,7 @@ const startEditor = () => {
         let currentTime = video.currentTime;
         let numberTwo = currentTime.toFixed(2) * 100;
         let numberThree = ((Math.round(numberTwo / 25) * 25) / 100) + '';
-        console.log(numberThree);
+        //console.log(numberThree);
         document.querySelectorAll('.navigation').forEach((scene) => {
             if (scene.getAttribute('time') === numberThree) {
                 scene.classList.add('scene_active');
@@ -413,6 +430,7 @@ const startEditor = () => {
                 activeGenerator = false;
                 // renderFirst();
                 renderSecond();
+                console.log(sceneArr);
                 renderThird();
                 //console.log(sceneArr);
                 addListeners();
@@ -434,16 +452,22 @@ const startEditor = () => {
                 // at the time as we expect
                 //console.log(stepHided);
                 generateThumbnail(stepHided, caller);
+
                 // when frame is captured, increase here by 5 seconds
                 //i += 0.25;
                 stepHided += n;
                 // if we are not past end, seek to next interval
+                renderFirst();
+
+
+
+
                 if (stepHided <= this.duration) {
                     // this will trigger another seeked event
                     this.currentTime = stepHided;
                 } else {
                     activeGeneratorHided = false;
-                    renderFirst();
+                    //renderFirst();
                     video.addEventListener('timeupdate', syncVideoToScene);
                     //console.log(sceneArr);
                     //addListeners();
