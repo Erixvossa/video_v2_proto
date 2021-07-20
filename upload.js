@@ -184,7 +184,7 @@ input.addEventListener('change', function() {
 });
 
 const startEditor = () => {
-
+    console.log('editor is started');
     sceneArr = [];
     sceneArrToBack = [];
     output.innerHTML = '';
@@ -336,8 +336,9 @@ const startEditor = () => {
 
         hidedVideo = video.cloneNode(true);
         document.querySelector('.hided-video').prepend(hidedVideo);
+        video.removeEventListener('loadeddata', loadedDataListener);
     }
-    video.removeEventListener('loadeddata', loadedDataListener);
+
     video.addEventListener('loadeddata', loadedDataListener);
 
     function generateThumbnail(i, caller, scaleFactor) {
@@ -426,7 +427,7 @@ const startEditor = () => {
                 renderFirst();
                 renderSecond();
                 //console.log(sceneArr);
-                //renderThird();
+                renderThird();
 
                 addListeners();
                 video.currentTime = 0;
