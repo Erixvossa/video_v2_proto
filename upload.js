@@ -9,10 +9,6 @@ export let sceneArr = [];
 export let sceneArrToBack = [];
 
 
-
-
-
-
 let imageWidth;
 
 video.setAttribute('height', videoHeight);
@@ -166,8 +162,6 @@ document.addEventListener('click', (e) => {
 
 
 
-
-
 input.addEventListener('change', function() {
     const files = this.files || [];
 
@@ -180,8 +174,6 @@ input.addEventListener('change', function() {
         //videoSource.setAttribute('src', 'https://appstorespy.com/s/ftue/blured.mp4');
         video.appendChild(videoSource);
         startEditor();
-        //video.load();
-        //video.play();
     };
     //Отображание прогресса загрузки видео
     // reader.onprogress = function (e) {
@@ -206,6 +198,14 @@ const startEditor = () => {
     video.load();
 
 
+    const fillFirstOutput = (sceneTime) => {
+        //console.log(sceneTime);
+        activeGeneratorHided = true;
+        startHidedVideo(sceneTime);
+        //console.log(sceneArr);
+    }
+
+
     const addListeners = () => {
         const navigation = document.querySelectorAll('.navigation');
 
@@ -220,33 +220,60 @@ const startEditor = () => {
                     }
                 });
                 if (el.parentElement !== document.querySelector('.output')) {
+
                     //console.log(sceneTime);
                     const targetWidth = (((sceneTime / 0.25) - 5) * imageWidth);
                     const width = targetWidth;
                     document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
+
+                    //let timeToSend = sceneTime - 0;
+                    //fillFirstOutput(timeToSend);
+
+
                 } else if (el.parentElement === document.querySelector('.output')) {
 
                 }
+                let timeToSend = sceneTime - 0;
+                fillFirstOutput(timeToSend);
             });
         });
     };
 
     const renderFirst = () => {
         output.innerHTML = "";
+        //console.log(sceneArr)
+        let w = (video.videoWidth * 0.125) + 'px';
+        let h = (video.videoHeight * 0.125) + 'px';
         sceneArr.forEach((scene) => {
-            if (scene.image) {
-                scene.image.classList.add('scene');
-                scene.image.classList.add('navigation');
-                scene.image.setAttribute('time', scene.time);
-                scene.image.addEventListener('click', () => {
-                    video.currentTime = scene.time;
-                    popup.classList.add('popup_show');
-                })
-                const sceneDiv = document.createElement('div');
-                output.append(sceneDiv);
-                //generatePopup(sceneDiv, scene.time);
-                sceneDiv.prepend(scene.image);
-            }
+            const sceneDiv = document.createElement('div');
+            const sceneP = document.createElement('p');
+            sceneP.textContent = `${scene.time}`;
+            sceneDiv.classList.add('scene');
+            sceneDiv.classList.add('navigation');
+            sceneDiv.style.minWidth = w;
+            sceneDiv.style.minHeight = h;
+            sceneDiv.setAttribute('time', scene.time);
+            sceneDiv.addEventListener('click', () => {
+                video.currentTime = scene.time;
+                popup.classList.add('popup_show');
+            });
+            sceneDiv.append(sceneP);
+            output.append(sceneDiv);
+
+
+            // if (scene.image) {
+            //     scene.image.classList.add('scene');
+            //     scene.image.classList.add('navigation');
+            //     scene.image.setAttribute('time', scene.time);
+            //     scene.image.addEventListener('click', () => {
+            //         video.currentTime = scene.time;
+            //         popup.classList.add('popup_show');
+            //     })
+            //     const sceneDiv = document.createElement('div');
+            //     output.append(sceneDiv);
+            //     //generatePopup(sceneDiv, scene.time);
+            //     sceneDiv.prepend(scene.image);
+            // }
         })
     }
 
@@ -268,7 +295,6 @@ const startEditor = () => {
         //console.log(sceneArr);
         for (let i = 0; i < sceneArr.length; i = i + Math.round(sceneArr.length / screenWidth)) {
             //console.log(i);
-
             const inaccurateOutput = document.querySelector('.inaccurate-output');
             const innacurateDiv = document.createElement('div');
             innacurateDiv.classList.add('inaccurate-output_div');
@@ -288,9 +314,6 @@ const startEditor = () => {
 
 
 
-
-
-
     let i = 0;
     video.addEventListener('loadeddata', function () {
 
@@ -307,19 +330,15 @@ const startEditor = () => {
                     sceneArr.push(scene);
                     currentTime += 0.25;
             }
-            //console.log(sceneArr);
         }
         timesCounter();
 
         hidedVideo = video.cloneNode(true);
         document.querySelector('.hided-video').prepend(hidedVideo);
-        //console.log(hidedVideo);
-        hidedVideo.addEventListener('loadeddata', startHidedVideo);
-        //hidedVideo.load();
-
     });
 
     function generateThumbnail(i, caller, scaleFactor) {
+        console.log(i, caller)
         if (scaleFactor == null) {
             scaleFactor = 0.125;
         }
@@ -343,46 +362,19 @@ const startEditor = () => {
             context.drawImage(hidedVideo, 0, 0, w, h);
         }
         var dataURL = thecanvas.toDataURL();
-
-
         //create img
         const image = document.createElement('img');
         image.setAttribute('src', dataURL);
         image.setAttribute('time', i);
-        //Опциональный момент.
-        //img.setAttribute('time', i);
-
-        //console.log(i)
-
         sceneArr.forEach((scene) => {
 
-            if (scene.time === i) {
-                //console.log(scene)
+            if (scene.time === i && !scene.image) {
                 scene.image = image;
-                // if (scene.image) {
-                //     //if (scene.image.getAttribute('time' === )) {
-                //console.log(scene);
-                        //console.log(scene.time)
-                        // scene.image.classList.add('scene');
-                        // scene.image.classList.add('navigation');
-                        // scene.image.setAttribute('time', scene.time);
-                        // scene.image.addEventListener('click', () => {
-                        //     video.currentTime = scene.time;
-                        //     popup.classList.add('popup_show');
-                        // })
-                        // const sceneDiv = document.createElement('div');
-                        // output.append(sceneDiv);
-                        // //generatePopup(sceneDiv, scene.time);
-                        // sceneDiv.prepend(scene.image);
-                //     //}
-                // }
+                //console.log(scene)
             }
         })
-
-        //sceneArr.push(scene);
-        //console.log(sceneArr);
         sortArrByTime(sceneArr);
-
+        //console.log(sceneArr)
     }
 
 
@@ -428,60 +420,73 @@ const startEditor = () => {
                 this.currentTime = step;
             } else {
                 activeGenerator = false;
-                // renderFirst();
+                renderFirst();
                 renderSecond();
-                console.log(sceneArr);
-                renderThird();
                 //console.log(sceneArr);
+                renderThird();
+
                 addListeners();
                 video.currentTime = 0;
-                // video.addEventListener('timeupdate', syncVideoToScene);
             }
         }
     });
 
     let activeGeneratorHided = true;
     let stepHided = 0;
+    let maxTime = 1;
 
-    const startHidedVideo = () => {
-        hidedVideo.currentTime = i;
-        hidedVideo.addEventListener('seeked', function (e) {
-            let caller = 'hidedVideo';
-            if (activeGeneratorHided) {
-                // now video has seeked and current frames will show
-                // at the time as we expect
-                //console.log(stepHided);
-                generateThumbnail(stepHided, caller);
-
-                // when frame is captured, increase here by 5 seconds
-                //i += 0.25;
-                stepHided += n;
-                // if we are not past end, seek to next interval
-                renderFirst();
-
-
-
-
-                if (stepHided <= this.duration) {
-                    // this will trigger another seeked event
-                    this.currentTime = stepHided;
-                } else {
-                    activeGeneratorHided = false;
-                    //renderFirst();
-                    video.addEventListener('timeupdate', syncVideoToScene);
-                    //console.log(sceneArr);
-                    //addListeners();
-                    // video.addEventListener('timeupdate', syncVideoToScene);
-                }
+    const seekedListener = () => {
+        let caller = 'hidedVideo';
+        if (activeGeneratorHided) {
+            generateThumbnail(stepHided, caller);
+            stepHided += n;
+            console.log(stepHided);
+            //renderFirst();
+            if (stepHided <= hidedVideo.duration && stepHided <= maxTime) {
+                hidedVideo.currentTime = stepHided;
+                //console.log(this.currentTime)
+            } else {
+                activeGeneratorHided = false;
+                //console.log('1')
+                sceneArr.forEach((scene) => {
+                    if (scene.image) {
+                        output.querySelectorAll('div').forEach((el) => {
+                            if (el.getAttribute('time') == scene.time && !el.querySelector('img')) {
+                                el.append(scene.image);
+                            }
+                        })
+                    }
+                })
+                hidedVideo.removeEventListener('seeked', seekedListener)
             }
-        });
-
+        }
     }
 
+    const startHidedVideo = (startTime) => {
+        maxTime = startTime + 1;
+        hidedVideo.currentTime = startTime;
+        if (startTime >= 1) {
+            stepHided = startTime - 1;
+        }
+        else if (startTime === 0.75) {
+            stepHided = startTime - 0.75;
+        }
+        else if (startTime === 0.5) {
+            stepHided = startTime - 0.5;
+        }
+        else if (startTime === 0.25) {
+            stepHided = startTime - 0.25;
+        }
+        else if (startTime === 0) {
+            stepHided = startTime;
+        }
+        //stepHided = startTime;
+        console.log(`startTime ${startTime}, maxTime ${maxTime}`)
+        hidedVideo.addEventListener('seeked', seekedListener);
 
 
+    }
 }
 
 
-//startEditor();
 

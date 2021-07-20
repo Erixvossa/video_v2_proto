@@ -1,3 +1,7 @@
+p {
+    margin: 0;
+}
+
 .page {
     display: flex;
     flex-direction: column;
@@ -28,9 +32,15 @@ video {
     overflow-x: auto;
 }
 
+.output::before {
+    content: ".";
+    visibility: hidden;
+}
+
 .scene {
     display: flex;
     box-sizing: border-box;
+    flex-direction: column;
 }
 
 .scene_active {
