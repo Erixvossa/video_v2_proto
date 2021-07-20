@@ -212,7 +212,7 @@ const startEditor = () => {
         navigation.forEach((el) => {
             const sceneTime = el.getAttribute('time');
             //console.log(sceneTime);
-            el.addEventListener('click', () => {
+            const doALotOf = () => {
                 document.querySelectorAll('.navigation').forEach((element) => {
                     element.classList.remove('scene_active');
                     if (element.getAttribute('time') === sceneTime) {
@@ -235,7 +235,9 @@ const startEditor = () => {
                 }
                 let timeToSend = sceneTime - 0;
                 fillFirstOutput(timeToSend);
-            });
+            }
+            el.removeEventListener('click', doALotOf);
+            el.addEventListener('click', doALotOf);
         });
     };
 
@@ -315,9 +317,8 @@ const startEditor = () => {
 
 
     let i = 0;
-    video.addEventListener('loadeddata', function () {
-
-        this.currentTime = i;
+    const loadedDataListener = () => {
+        video.currentTime = i;
         videoLength = video.duration;
         let scenesCount = Math.round(videoLength / n);
         console.log(scenesCount);
@@ -325,20 +326,22 @@ const startEditor = () => {
             let currentTime = 0;
             for (let i = 0; i < scenesCount; i ++) {
                 //console.log(i)
-                    let scene = {}
-                    scene.time = currentTime;
-                    sceneArr.push(scene);
-                    currentTime += 0.25;
+                let scene = {}
+                scene.time = currentTime;
+                sceneArr.push(scene);
+                currentTime += 0.25;
             }
         }
         timesCounter();
 
         hidedVideo = video.cloneNode(true);
         document.querySelector('.hided-video').prepend(hidedVideo);
-    });
+    }
+    video.removeEventListener('loadeddata', loadedDataListener);
+    video.addEventListener('loadeddata', loadedDataListener);
 
     function generateThumbnail(i, caller, scaleFactor) {
-        console.log(i, caller)
+        //console.log(i, caller)
         if (scaleFactor == null) {
             scaleFactor = 0.125;
         }
@@ -387,7 +390,7 @@ const startEditor = () => {
         document.querySelectorAll('.navigation').forEach((scene) => {
             if (scene.getAttribute('time') === numberThree) {
                 scene.classList.add('scene_active');
-                if (scene.parentElement.parentElement === document.querySelector('.output')) {
+                if (scene.parentElement === document.querySelector('.output')) {
 
                     const targetWidth = (((scene.getAttribute('time') / 0.25) - 5) * imageWidth);
                     const width = targetWidth;
@@ -423,13 +426,27 @@ const startEditor = () => {
                 renderFirst();
                 renderSecond();
                 //console.log(sceneArr);
-                renderThird();
+                //renderThird();
 
                 addListeners();
                 video.currentTime = 0;
             }
         }
     });
+
+    video.addEventListener('play', () => {
+
+        fillFirstOutput(Math.round(video.currentTime))
+        video._updateInterval = setInterval(() => {
+            fillFirstOutput(Math.round(video.currentTime))
+            //console.log(Math.round(video.currentTime))
+            // do what you need
+        }, 2000);
+    }, true);
+
+    video.addEventListener('pause', () => clearInterval(video._updateInterval), true);
+
+    video.addEventListener('timeupdate', syncVideoToScene);
 
     let activeGeneratorHided = true;
     let stepHided = 0;
@@ -440,7 +457,7 @@ const startEditor = () => {
         if (activeGeneratorHided) {
             generateThumbnail(stepHided, caller);
             stepHided += n;
-            console.log(stepHided);
+            //console.log(stepHided);
             //renderFirst();
             if (stepHided <= hidedVideo.duration && stepHided <= maxTime) {
                 hidedVideo.currentTime = stepHided;
@@ -463,9 +480,21 @@ const startEditor = () => {
     }
 
     const startHidedVideo = (startTime) => {
-        maxTime = startTime + 1;
+        maxTime = startTime + 3;
         hidedVideo.currentTime = startTime;
-        if (startTime >= 1) {
+        if (startTime >= 2) {
+            stepHided = startTime - 2;
+        }
+        else if (startTime === 1.75) {
+            stepHided = startTime - 1.75;
+        }
+        else if (startTime === 1.50) {
+            stepHided = startTime - 1.50;
+        }
+        else if (startTime === 1.25) {
+            stepHided = startTime - 1.25;
+        }
+        else if (startTime === 1) {
             stepHided = startTime - 1;
         }
         else if (startTime === 0.75) {
@@ -481,7 +510,7 @@ const startEditor = () => {
             stepHided = startTime;
         }
         //stepHided = startTime;
-        console.log(`startTime ${startTime}, maxTime ${maxTime}`)
+        //console.log(`startTime ${startTime}, maxTime ${maxTime}`)
         hidedVideo.addEventListener('seeked', seekedListener);
 
 
