@@ -192,6 +192,7 @@ const startEditor = () => {
     document.querySelector('.inaccurate-output').innerHTML = '';
     document.querySelector('.scene-selector').innerHTML = '';
     let hidedVideo;
+    let lazyVideo;
     let videoLength;
     let n = 0.25;
 
@@ -321,7 +322,7 @@ const startEditor = () => {
         video.currentTime = i;
         videoLength = video.duration;
         let scenesCount = Math.round(videoLength / n);
-        console.log(scenesCount);
+        //console.log(scenesCount);
         const timesCounter = () => {
             let currentTime = 0;
             for (let i = 0; i < scenesCount; i ++) {
@@ -337,6 +338,9 @@ const startEditor = () => {
         hidedVideo = video.cloneNode(true);
         document.querySelector('.hided-video').prepend(hidedVideo);
         video.removeEventListener('loadeddata', loadedDataListener);
+
+        lazyVideo = video.cloneNode(true);
+        document.querySelector('.lazy-video').prepend(lazyVideo);
     }
 
     video.addEventListener('loadeddata', loadedDataListener);
@@ -449,6 +453,11 @@ const startEditor = () => {
 
     video.addEventListener('timeupdate', syncVideoToScene);
 
+
+
+
+    let lazyStepHided = 0;
+    let activeGeneratorLazy = true;
     let activeGeneratorHided = true;
     let stepHided = 0;
     let maxTime = 1;
@@ -481,7 +490,7 @@ const startEditor = () => {
     }
 
     const startHidedVideo = (startTime) => {
-        maxTime = startTime + 3;
+        maxTime = startTime + 5;
         hidedVideo.currentTime = startTime;
         if (startTime >= 2) {
             stepHided = startTime - 2;
@@ -516,7 +525,194 @@ const startEditor = () => {
 
 
     }
+    const startLazyLoad = (e) => {
+
+        let counter = 0;
+        const counterUpper = () => {
+                counter += 1;
+        }
+
+        let imagesArr = output.querySelectorAll('img');
+        // for (let i = counter; i === counter; i += 3) {
+        //
+        //     counter = i;
+        // }
+        // console.log(counter);
+
+        // const checkImage = () => {
+        //     if (sceneArr[counter].image) {
+        //         console.log(counter);
+        //         // fillFirstOutput(sceneArr[counter].time)
+        //         //console.log(sceneArr[counter]);
+        //         counterUpper();
+        //         checkImage();
+        //         //console.log(counter);
+        //     } else if (!sceneArr[counter].image){
+        //         fillFirstOutput(sceneArr[counter].time)
+        //         counterUpper();
+        //         //console.log(`добавили + 1 к шагу ${counter}`);
+        //     }
+        //     else if (i <= sceneArr.length) {
+        //         return
+        //     }
+        // }
+        // checkImage();
+
+        // const imageLoad = () => {
+        //     if (counter < sceneArr.length) {
+        //         fillFirstOutput(sceneArr[counter].time)
+        //         counter += 1;
+        //         console.log(sceneArr[counter]);
+        //     }
+        //     else {
+        //         console.log('clearinterval')
+        //             clearInterval(startTimeout);
+        //     }
+        // }
+
+        // const imageLoad = () => {
+        //     // sceneArr.some((scene) => {
+        //     //     if (!scene.image) {
+        //     //         //fillFirstOutput(scene.time);
+        //     //         console.log(scene);
+        //     //
+        //     //     }
+        //     // })
+        //
+        //         sceneArr.every(function(element) {
+        //         fillFirstOutput(element.time)
+        //         if (element.image) return false
+        //         else return true
+        //     })
+        // }
+
+
+
+
+        // let startTimeout =
+        //     setInterval(() => {
+        //         console.log('wait');
+        //         imageLoad();
+        //         //checkImage();
+        //     }, 1000);
+        //     //clearStartTimeout()
+
+
+
+        // const clearStartTimeout = () => {
+        //     console.log('stop timeout')
+        //     clearInterval(startTimeout);
+        //
+        //         startTimeout =
+        //             setInterval(() => {
+        //                 console.log('wait more');
+        //                 //imageLoad();
+        //             }, 2000);
+        //
+        // }
+
+        // if (counter >= sceneArr.length) {
+        //     console.log('clearinterval')
+        //     clearInterval(startTimeout);
+        // }
+
+
+
+        //document.querySelector('.navigation-container').addEventListener('click', clearStartTimeout )
+
+
+        let newCounter = 0;
+        //Работающий способ
+        const lazyLoad = (startTime) => {
+            // activeGeneratorHided = true;
+            // maxTime = startTime + 3;
+            // hidedVideo.currentTime = startTime;
+            // stepHided = 0;
+            // //stepHided = startTime;
+            // console.log(`startTime ${startTime}, maxTime ${maxTime}`)
+            // hidedVideo.addEventListener('seeked', seekedListener);
+            // newCounter += 3;
+            //раскомментить то, что выше, чтобы заработало с багами.
+
+
+            activeGeneratorLazy = true;
+            maxTime = startTime + 2;
+            lazyStepHided = startTime;
+            hidedVideo.currentTime = startTime;
+            hidedVideo.addEventListener('seeked', lazySeekedListener);
+            newCounter += 2;
+
+
+        }
+
+        const lazySeekedListener = () => {
+            //console.log('lazystart');
+            let caller = 'hidedVideo';
+            if (activeGeneratorLazy) {
+                generateThumbnail(lazyStepHided, caller);
+                lazyStepHided += n;
+                //console.log(stepHided);
+                //renderFirst();
+                if (lazyStepHided <= hidedVideo.duration && lazyStepHided <= maxTime) {
+                    hidedVideo.currentTime = lazyStepHided;
+                    //console.log(this.currentTime)
+                } else {
+                    activeGeneratorLazy = false;
+                    //console.log('1')
+                    sortArrByTime(sceneArr);
+                    sceneArr.forEach((scene) => {
+                        if (scene.image) {
+                            output.querySelectorAll('div').forEach((el) => {
+                                if (el.getAttribute('time') == scene.time && !el.querySelector('img')) {
+                                    el.append(scene.image);
+                                }
+                            })
+                        }
+                    })
+                    hidedVideo.removeEventListener('seeked', lazySeekedListener)
+                }
+            }
+        }
+
+
+
+
+        //lazyLoad(newCounter);
+        // console.log(newCounter);
+        // console.log(sceneArr.length);
+
+
+        let startTimeout =
+            setInterval(() => {
+                if (newCounter <= sceneArr[sceneArr.length - 1].time) {
+                    //console.log(newCounter);
+                    //console.log('wait');
+                    lazyLoad(newCounter)
+                }
+                //checkImage();
+            }, 2000);
+        document.addEventListener('click', () => {
+            clearInterval(startTimeout);
+            //console.log('breack');
+            startTimeout =
+                setInterval(() => {
+                    if (newCounter <= sceneArr[sceneArr.length - 1].time) {
+                        //console.log(newCounter);
+                        //console.log('wait');
+                        lazyLoad(newCounter)
+                    }
+                    //checkImage();
+                }, 2000);
+        })
+
+    }
+
+
+    setTimeout(startLazyLoad, 2000)
 }
+
+
+// startLazyLoad();
 
 
 
