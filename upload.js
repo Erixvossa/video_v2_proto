@@ -369,6 +369,9 @@ const startEditor = () => {
         else if (caller === 'hidedVideo') {
             context.drawImage(hidedVideo, 0, 0, w, h);
         }
+        else if (caller === 'lazyVideo') {
+            context.drawImage(lazyVideo, 0, 0, w, h);
+        }
         var dataURL = thecanvas.toDataURL();
         //create img
         const image = document.createElement('img');
@@ -378,7 +381,7 @@ const startEditor = () => {
 
             if (scene.time === i && !scene.image) {
                 scene.image = image;
-                //console.log(scene)
+                //console.log(scene, caller)
             }
         })
         sortArrByTime(sceneArr);
@@ -638,23 +641,24 @@ const startEditor = () => {
             activeGeneratorLazy = true;
             maxTime = startTime + 2;
             lazyStepHided = startTime;
-            hidedVideo.currentTime = startTime;
-            hidedVideo.addEventListener('seeked', lazySeekedListener);
+            lazyVideo.currentTime = startTime;
+            lazyVideo.addEventListener('seeked', lazySeekedListener);
             newCounter += 2;
 
 
         }
 
         const lazySeekedListener = () => {
+            console.log(lazyVideo.currentTime);
             //console.log('lazystart');
-            let caller = 'hidedVideo';
+            let caller = 'lazyVideo';
             if (activeGeneratorLazy) {
                 generateThumbnail(lazyStepHided, caller);
                 lazyStepHided += n;
                 //console.log(stepHided);
                 //renderFirst();
-                if (lazyStepHided <= hidedVideo.duration && lazyStepHided <= maxTime) {
-                    hidedVideo.currentTime = lazyStepHided;
+                if (lazyStepHided <= lazyVideo.duration && lazyStepHided <= maxTime) {
+                    lazyVideo.currentTime = lazyStepHided;
                     //console.log(this.currentTime)
                 } else {
                     activeGeneratorLazy = false;
@@ -665,11 +669,12 @@ const startEditor = () => {
                             output.querySelectorAll('div').forEach((el) => {
                                 if (el.getAttribute('time') == scene.time && !el.querySelector('img')) {
                                     el.append(scene.image);
+                                    //console.log(scene)
                                 }
                             })
                         }
                     })
-                    hidedVideo.removeEventListener('seeked', lazySeekedListener)
+                    lazyVideo.removeEventListener('seeked', lazySeekedListener)
                 }
             }
         }
@@ -693,7 +698,7 @@ const startEditor = () => {
             }, 2000);
         document.addEventListener('click', () => {
             clearInterval(startTimeout);
-            //console.log('breack');
+            console.log('break');
             startTimeout =
                 setInterval(() => {
                     if (newCounter <= sceneArr[sceneArr.length - 1].time) {

@@ -203,6 +203,10 @@ video {
     display: none;
 }
 
+.lazy-video {
+    display: none;
+}
+
 .navigation {
     display: flex;
     box-sizing: border-box;
