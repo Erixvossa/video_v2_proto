@@ -639,11 +639,11 @@ const startEditor = () => {
 
 
             activeGeneratorLazy = true;
-            maxTime = startTime + 2;
+            maxTime = startTime + 4;
             lazyStepHided = startTime;
             lazyVideo.currentTime = startTime;
             lazyVideo.addEventListener('seeked', lazySeekedListener);
-            newCounter += 2;
+            newCounter += 4;
 
 
         }
@@ -695,7 +695,7 @@ const startEditor = () => {
                     lazyLoad(newCounter)
                 }
                 //checkImage();
-            }, 2000);
+            }, 3000);
         document.addEventListener('click', () => {
             clearInterval(startTimeout);
             console.log('break');
@@ -707,7 +707,7 @@ const startEditor = () => {
                         lazyLoad(newCounter)
                     }
                     //checkImage();
-                }, 2000);
+                }, 3000);
         })
 
     }
