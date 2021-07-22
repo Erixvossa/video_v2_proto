@@ -9,10 +9,6 @@ export let sceneArr = [];
 export let sceneArrToBack = [];
 
 
-
-
-
-
 let imageWidth;
 
 video.setAttribute('height', videoHeight);
@@ -166,8 +162,6 @@ document.addEventListener('click', (e) => {
 
 
 
-
-
 input.addEventListener('change', function() {
     const files = this.files || [];
 
@@ -180,8 +174,6 @@ input.addEventListener('change', function() {
         //videoSource.setAttribute('src', 'https://appstorespy.com/s/ftue/blured.mp4');
         video.appendChild(videoSource);
         startEditor();
-        //video.load();
-        //video.play();
     };
     //Отображание прогресса загрузки видео
     // reader.onprogress = function (e) {
@@ -192,7 +184,7 @@ input.addEventListener('change', function() {
 });
 
 const startEditor = () => {
-
+    console.log('editor is started');
     sceneArr = [];
     sceneArrToBack = [];
     output.innerHTML = '';
@@ -200,10 +192,19 @@ const startEditor = () => {
     document.querySelector('.inaccurate-output').innerHTML = '';
     document.querySelector('.scene-selector').innerHTML = '';
     let hidedVideo;
+    let lazyVideo;
     let videoLength;
     let n = 0.25;
 
     video.load();
+
+
+    const fillFirstOutput = (sceneTime) => {
+        //console.log(sceneTime);
+        activeGeneratorHided = true;
+        startHidedVideo(sceneTime);
+        //console.log(sceneArr);
+    }
 
 
     const addListeners = () => {
@@ -212,7 +213,7 @@ const startEditor = () => {
         navigation.forEach((el) => {
             const sceneTime = el.getAttribute('time');
             //console.log(sceneTime);
-            el.addEventListener('click', () => {
+            const doALotOf = () => {
                 document.querySelectorAll('.navigation').forEach((element) => {
                     element.classList.remove('scene_active');
                     if (element.getAttribute('time') === sceneTime) {
@@ -220,33 +221,62 @@ const startEditor = () => {
                     }
                 });
                 if (el.parentElement !== document.querySelector('.output')) {
+
                     //console.log(sceneTime);
                     const targetWidth = (((sceneTime / 0.25) - 5) * imageWidth);
                     const width = targetWidth;
                     document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
+
+                    //let timeToSend = sceneTime - 0;
+                    //fillFirstOutput(timeToSend);
+
+
                 } else if (el.parentElement === document.querySelector('.output')) {
 
                 }
-            });
+                let timeToSend = sceneTime - 0;
+                fillFirstOutput(timeToSend);
+            }
+            el.removeEventListener('click', doALotOf);
+            el.addEventListener('click', doALotOf);
         });
     };
 
     const renderFirst = () => {
         output.innerHTML = "";
+        //console.log(sceneArr)
+        let w = (video.videoWidth * 0.125) + 'px';
+        let h = (video.videoHeight * 0.125) + 'px';
         sceneArr.forEach((scene) => {
-            if (scene.image) {
-                scene.image.classList.add('scene');
-                scene.image.classList.add('navigation');
-                scene.image.setAttribute('time', scene.time);
-                scene.image.addEventListener('click', () => {
-                    video.currentTime = scene.time;
-                    popup.classList.add('popup_show');
-                })
-                const sceneDiv = document.createElement('div');
-                output.append(sceneDiv);
-                //generatePopup(sceneDiv, scene.time);
-                sceneDiv.prepend(scene.image);
-            }
+            const sceneDiv = document.createElement('div');
+            const sceneP = document.createElement('p');
+            sceneP.textContent = `${scene.time}`;
+            sceneDiv.classList.add('scene');
+            sceneDiv.classList.add('navigation');
+            sceneDiv.style.minWidth = w;
+            sceneDiv.style.minHeight = h;
+            sceneDiv.setAttribute('time', scene.time);
+            sceneDiv.addEventListener('click', () => {
+                video.currentTime = scene.time;
+                popup.classList.add('popup_show');
+            });
+            sceneDiv.append(sceneP);
+            output.append(sceneDiv);
+
+
+            // if (scene.image) {
+            //     scene.image.classList.add('scene');
+            //     scene.image.classList.add('navigation');
+            //     scene.image.setAttribute('time', scene.time);
+            //     scene.image.addEventListener('click', () => {
+            //         video.currentTime = scene.time;
+            //         popup.classList.add('popup_show');
+            //     })
+            //     const sceneDiv = document.createElement('div');
+            //     output.append(sceneDiv);
+            //     //generatePopup(sceneDiv, scene.time);
+            //     sceneDiv.prepend(scene.image);
+            // }
         })
     }
 
@@ -268,7 +298,6 @@ const startEditor = () => {
         //console.log(sceneArr);
         for (let i = 0; i < sceneArr.length; i = i + Math.round(sceneArr.length / screenWidth)) {
             //console.log(i);
-
             const inaccurateOutput = document.querySelector('.inaccurate-output');
             const innacurateDiv = document.createElement('div');
             innacurateDiv.classList.add('inaccurate-output_div');
@@ -288,38 +317,36 @@ const startEditor = () => {
 
 
 
-
-
-
     let i = 0;
-    video.addEventListener('loadeddata', function () {
-
-        this.currentTime = i;
+    const loadedDataListener = () => {
+        video.currentTime = i;
         videoLength = video.duration;
         let scenesCount = Math.round(videoLength / n);
-        console.log(scenesCount);
+        //console.log(scenesCount);
         const timesCounter = () => {
             let currentTime = 0;
             for (let i = 0; i < scenesCount; i ++) {
                 //console.log(i)
-                    let scene = {}
-                    scene.time = currentTime;
-                    sceneArr.push(scene);
-                    currentTime += 0.25;
+                let scene = {}
+                scene.time = currentTime;
+                sceneArr.push(scene);
+                currentTime += 0.25;
             }
-            //console.log(sceneArr);
         }
         timesCounter();
 
         hidedVideo = video.cloneNode(true);
         document.querySelector('.hided-video').prepend(hidedVideo);
-        //console.log(hidedVideo);
-        hidedVideo.addEventListener('loadeddata', startHidedVideo);
-        //hidedVideo.load();
+        video.removeEventListener('loadeddata', loadedDataListener);
 
-    });
+        lazyVideo = video.cloneNode(true);
+        document.querySelector('.lazy-video').prepend(lazyVideo);
+    }
+
+    video.addEventListener('loadeddata', loadedDataListener);
 
     function generateThumbnail(i, caller, scaleFactor) {
+        //console.log(i, caller)
         if (scaleFactor == null) {
             scaleFactor = 0.125;
         }
@@ -342,47 +369,23 @@ const startEditor = () => {
         else if (caller === 'hidedVideo') {
             context.drawImage(hidedVideo, 0, 0, w, h);
         }
+        else if (caller === 'lazyVideo') {
+            context.drawImage(lazyVideo, 0, 0, w, h);
+        }
         var dataURL = thecanvas.toDataURL();
-
-
         //create img
         const image = document.createElement('img');
         image.setAttribute('src', dataURL);
         image.setAttribute('time', i);
-        //Опциональный момент.
-        //img.setAttribute('time', i);
-
-        //console.log(i)
-
         sceneArr.forEach((scene) => {
 
-            if (scene.time === i) {
-                //console.log(scene)
+            if (scene.time === i && !scene.image) {
                 scene.image = image;
-                // if (scene.image) {
-                //     //if (scene.image.getAttribute('time' === )) {
-                //console.log(scene);
-                        //console.log(scene.time)
-                        // scene.image.classList.add('scene');
-                        // scene.image.classList.add('navigation');
-                        // scene.image.setAttribute('time', scene.time);
-                        // scene.image.addEventListener('click', () => {
-                        //     video.currentTime = scene.time;
-                        //     popup.classList.add('popup_show');
-                        // })
-                        // const sceneDiv = document.createElement('div');
-                        // output.append(sceneDiv);
-                        // //generatePopup(sceneDiv, scene.time);
-                        // sceneDiv.prepend(scene.image);
-                //     //}
-                // }
+                //console.log(scene, caller)
             }
         })
-
-        //sceneArr.push(scene);
-        //console.log(sceneArr);
         sortArrByTime(sceneArr);
-
+        //console.log(sceneArr)
     }
 
 
@@ -395,7 +398,7 @@ const startEditor = () => {
         document.querySelectorAll('.navigation').forEach((scene) => {
             if (scene.getAttribute('time') === numberThree) {
                 scene.classList.add('scene_active');
-                if (scene.parentElement.parentElement === document.querySelector('.output')) {
+                if (scene.parentElement === document.querySelector('.output')) {
 
                     const targetWidth = (((scene.getAttribute('time') / 0.25) - 5) * imageWidth);
                     const width = targetWidth;
@@ -428,60 +431,293 @@ const startEditor = () => {
                 this.currentTime = step;
             } else {
                 activeGenerator = false;
-                // renderFirst();
+                renderFirst();
                 renderSecond();
-                console.log(sceneArr);
-                renderThird();
                 //console.log(sceneArr);
+                renderThird();
+
                 addListeners();
                 video.currentTime = 0;
-                // video.addEventListener('timeupdate', syncVideoToScene);
             }
         }
     });
 
+    video.addEventListener('play', () => {
+
+        fillFirstOutput(Math.round(video.currentTime))
+        video._updateInterval = setInterval(() => {
+            fillFirstOutput(Math.round(video.currentTime))
+            //console.log(Math.round(video.currentTime))
+            // do what you need
+        }, 2000);
+    }, true);
+
+    video.addEventListener('pause', () => clearInterval(video._updateInterval), true);
+
+    video.addEventListener('timeupdate', syncVideoToScene);
+
+
+
+
+    let lazyStepHided = 0;
+    let activeGeneratorLazy = true;
     let activeGeneratorHided = true;
     let stepHided = 0;
+    let maxTime = 1;
 
-    const startHidedVideo = () => {
-        hidedVideo.currentTime = i;
-        hidedVideo.addEventListener('seeked', function (e) {
-            let caller = 'hidedVideo';
-            if (activeGeneratorHided) {
-                // now video has seeked and current frames will show
-                // at the time as we expect
+    const seekedListener = () => {
+        let caller = 'hidedVideo';
+        if (activeGeneratorHided) {
+            generateThumbnail(stepHided, caller);
+            stepHided += n;
+            //console.log(stepHided);
+            //renderFirst();
+            if (stepHided <= hidedVideo.duration && stepHided <= maxTime) {
+                hidedVideo.currentTime = stepHided;
+                //console.log(this.currentTime)
+            } else {
+                activeGeneratorHided = false;
+                //console.log('1')
+                sceneArr.forEach((scene) => {
+                    if (scene.image) {
+                        output.querySelectorAll('div').forEach((el) => {
+                            if (el.getAttribute('time') == scene.time && !el.querySelector('img')) {
+                                el.append(scene.image);
+                            }
+                        })
+                    }
+                })
+                hidedVideo.removeEventListener('seeked', seekedListener)
+            }
+        }
+    }
+
+    const startHidedVideo = (startTime) => {
+        maxTime = startTime + 5;
+        hidedVideo.currentTime = startTime;
+        if (startTime >= 2) {
+            stepHided = startTime - 2;
+        }
+        else if (startTime === 1.75) {
+            stepHided = startTime - 1.75;
+        }
+        else if (startTime === 1.50) {
+            stepHided = startTime - 1.50;
+        }
+        else if (startTime === 1.25) {
+            stepHided = startTime - 1.25;
+        }
+        else if (startTime === 1) {
+            stepHided = startTime - 1;
+        }
+        else if (startTime === 0.75) {
+            stepHided = startTime - 0.75;
+        }
+        else if (startTime === 0.5) {
+            stepHided = startTime - 0.5;
+        }
+        else if (startTime === 0.25) {
+            stepHided = startTime - 0.25;
+        }
+        else if (startTime === 0) {
+            stepHided = startTime;
+        }
+        //stepHided = startTime;
+        //console.log(`startTime ${startTime}, maxTime ${maxTime}`)
+        hidedVideo.addEventListener('seeked', seekedListener);
+
+
+    }
+    const startLazyLoad = (e) => {
+
+        let counter = 0;
+        const counterUpper = () => {
+                counter += 1;
+        }
+
+        let imagesArr = output.querySelectorAll('img');
+        // for (let i = counter; i === counter; i += 3) {
+        //
+        //     counter = i;
+        // }
+        // console.log(counter);
+
+        // const checkImage = () => {
+        //     if (sceneArr[counter].image) {
+        //         console.log(counter);
+        //         // fillFirstOutput(sceneArr[counter].time)
+        //         //console.log(sceneArr[counter]);
+        //         counterUpper();
+        //         checkImage();
+        //         //console.log(counter);
+        //     } else if (!sceneArr[counter].image){
+        //         fillFirstOutput(sceneArr[counter].time)
+        //         counterUpper();
+        //         //console.log(`добавили + 1 к шагу ${counter}`);
+        //     }
+        //     else if (i <= sceneArr.length) {
+        //         return
+        //     }
+        // }
+        // checkImage();
+
+        // const imageLoad = () => {
+        //     if (counter < sceneArr.length) {
+        //         fillFirstOutput(sceneArr[counter].time)
+        //         counter += 1;
+        //         console.log(sceneArr[counter]);
+        //     }
+        //     else {
+        //         console.log('clearinterval')
+        //             clearInterval(startTimeout);
+        //     }
+        // }
+
+        // const imageLoad = () => {
+        //     // sceneArr.some((scene) => {
+        //     //     if (!scene.image) {
+        //     //         //fillFirstOutput(scene.time);
+        //     //         console.log(scene);
+        //     //
+        //     //     }
+        //     // })
+        //
+        //         sceneArr.every(function(element) {
+        //         fillFirstOutput(element.time)
+        //         if (element.image) return false
+        //         else return true
+        //     })
+        // }
+
+
+
+
+        // let startTimeout =
+        //     setInterval(() => {
+        //         console.log('wait');
+        //         imageLoad();
+        //         //checkImage();
+        //     }, 1000);
+        //     //clearStartTimeout()
+
+
+
+        // const clearStartTimeout = () => {
+        //     console.log('stop timeout')
+        //     clearInterval(startTimeout);
+        //
+        //         startTimeout =
+        //             setInterval(() => {
+        //                 console.log('wait more');
+        //                 //imageLoad();
+        //             }, 2000);
+        //
+        // }
+
+        // if (counter >= sceneArr.length) {
+        //     console.log('clearinterval')
+        //     clearInterval(startTimeout);
+        // }
+
+
+
+        //document.querySelector('.navigation-container').addEventListener('click', clearStartTimeout )
+
+
+        let newCounter = 0;
+        //Работающий способ
+        const lazyLoad = (startTime) => {
+            // activeGeneratorHided = true;
+            // maxTime = startTime + 3;
+            // hidedVideo.currentTime = startTime;
+            // stepHided = 0;
+            // //stepHided = startTime;
+            // console.log(`startTime ${startTime}, maxTime ${maxTime}`)
+            // hidedVideo.addEventListener('seeked', seekedListener);
+            // newCounter += 3;
+            //раскомментить то, что выше, чтобы заработало с багами.
+
+
+            activeGeneratorLazy = true;
+            maxTime = startTime + 4;
+            lazyStepHided = startTime;
+            lazyVideo.currentTime = startTime;
+            lazyVideo.addEventListener('seeked', lazySeekedListener);
+            newCounter += 4;
+
+
+        }
+
+        const lazySeekedListener = () => {
+            console.log(lazyVideo.currentTime);
+            //console.log('lazystart');
+            let caller = 'lazyVideo';
+            if (activeGeneratorLazy) {
+                generateThumbnail(lazyStepHided, caller);
+                lazyStepHided += n;
                 //console.log(stepHided);
-                generateThumbnail(stepHided, caller);
-
-                // when frame is captured, increase here by 5 seconds
-                //i += 0.25;
-                stepHided += n;
-                // if we are not past end, seek to next interval
-                renderFirst();
-
-
-
-
-                if (stepHided <= this.duration) {
-                    // this will trigger another seeked event
-                    this.currentTime = stepHided;
+                //renderFirst();
+                if (lazyStepHided <= lazyVideo.duration && lazyStepHided <= maxTime) {
+                    lazyVideo.currentTime = lazyStepHided;
+                    //console.log(this.currentTime)
                 } else {
-                    activeGeneratorHided = false;
-                    //renderFirst();
-                    video.addEventListener('timeupdate', syncVideoToScene);
-                    //console.log(sceneArr);
-                    //addListeners();
-                    // video.addEventListener('timeupdate', syncVideoToScene);
+                    activeGeneratorLazy = false;
+                    //console.log('1')
+                    sortArrByTime(sceneArr);
+                    sceneArr.forEach((scene) => {
+                        if (scene.image) {
+                            output.querySelectorAll('div').forEach((el) => {
+                                if (el.getAttribute('time') == scene.time && !el.querySelector('img')) {
+                                    el.append(scene.image);
+                                    //console.log(scene)
+                                }
+                            })
+                        }
+                    })
+                    lazyVideo.removeEventListener('seeked', lazySeekedListener)
                 }
             }
-        });
+        }
+
+
+
+
+        //lazyLoad(newCounter);
+        // console.log(newCounter);
+        // console.log(sceneArr.length);
+
+
+        let startTimeout =
+            setInterval(() => {
+                if (newCounter <= sceneArr[sceneArr.length - 1].time) {
+                    //console.log(newCounter);
+                    //console.log('wait');
+                    lazyLoad(newCounter)
+                }
+                //checkImage();
+            }, 3000);
+        document.addEventListener('click', () => {
+            clearInterval(startTimeout);
+            console.log('break');
+            startTimeout =
+                setInterval(() => {
+                    if (newCounter <= sceneArr[sceneArr.length - 1].time) {
+                        //console.log(newCounter);
+                        //console.log('wait');
+                        lazyLoad(newCounter)
+                    }
+                    //checkImage();
+                }, 3000);
+        })
 
     }
 
 
-
+    setTimeout(startLazyLoad, 2000)
 }
 
 
-//startEditor();
+// startLazyLoad();
+
+
 
