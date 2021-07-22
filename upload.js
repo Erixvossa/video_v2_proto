@@ -199,12 +199,12 @@ const startEditor = () => {
     video.load();
 
 
-    const fillFirstOutput = (sceneTime) => {
-        //console.log(sceneTime);
-        activeGeneratorHided = true;
-        startHidedVideo(sceneTime);
-        //console.log(sceneArr);
-    }
+    // const fillFirstOutput = (sceneTime) => {
+    //     //console.log(sceneTime);
+    //     activeGeneratorHided = true;
+    //     startHidedVideo(sceneTime);
+    //     //console.log(sceneArr);
+    // }
 
 
     const addListeners = () => {
@@ -234,8 +234,8 @@ const startEditor = () => {
                 } else if (el.parentElement === document.querySelector('.output')) {
 
                 }
-                let timeToSend = sceneTime - 0;
-                fillFirstOutput(timeToSend);
+                //let timeToSend = sceneTime - 0;
+                //fillFirstOutput(timeToSend);
             }
             el.removeEventListener('click', doALotOf);
             el.addEventListener('click', doALotOf);
@@ -378,7 +378,6 @@ const startEditor = () => {
         image.setAttribute('src', dataURL);
         image.setAttribute('time', i);
         sceneArr.forEach((scene) => {
-
             if (scene.time === i && !scene.image) {
                 scene.image = image;
                 //console.log(scene, caller)
@@ -433,287 +432,170 @@ const startEditor = () => {
                 activeGenerator = false;
                 renderFirst();
                 renderSecond();
-                //console.log(sceneArr);
                 renderThird();
-
                 addListeners();
                 video.currentTime = 0;
+                startSeekedVideoListening();
             }
         }
     });
 
-    video.addEventListener('play', () => {
-
-        fillFirstOutput(Math.round(video.currentTime))
-        video._updateInterval = setInterval(() => {
-            fillFirstOutput(Math.round(video.currentTime))
-            //console.log(Math.round(video.currentTime))
-            // do what you need
-        }, 2000);
-    }, true);
-
-    video.addEventListener('pause', () => clearInterval(video._updateInterval), true);
+    // video.addEventListener('play', () => {
+    //
+    //     fillFirstOutput(Math.round(video.currentTime))
+    //     video._updateInterval = setInterval(() => {
+    //         fillFirstOutput(Math.round(video.currentTime))
+    //         //console.log(Math.round(video.currentTime))
+    //         // do what you need
+    //     }, 2000);
+    // }, true);
+    //
+    // video.addEventListener('pause', () => clearInterval(video._updateInterval), true);
 
     video.addEventListener('timeupdate', syncVideoToScene);
 
 
 
 
-    let lazyStepHided = 0;
-    let activeGeneratorLazy = true;
-    let activeGeneratorHided = true;
-    let stepHided = 0;
-    let maxTime = 1;
+    // let lazyStepHided = 0;
+    // let activeGeneratorLazy = true;
+    // let activeGeneratorHided = true;
+    // let stepHided = 0;
+    // let maxTime = 1;
 
-    const seekedListener = () => {
-        let caller = 'hidedVideo';
-        if (activeGeneratorHided) {
-            generateThumbnail(stepHided, caller);
-            stepHided += n;
-            //console.log(stepHided);
-            //renderFirst();
-            if (stepHided <= hidedVideo.duration && stepHided <= maxTime) {
-                hidedVideo.currentTime = stepHided;
-                //console.log(this.currentTime)
-            } else {
-                activeGeneratorHided = false;
-                //console.log('1')
-                sceneArr.forEach((scene) => {
-                    if (scene.image) {
-                        output.querySelectorAll('div').forEach((el) => {
-                            if (el.getAttribute('time') == scene.time && !el.querySelector('img')) {
-                                el.append(scene.image);
-                            }
-                        })
-                    }
-                })
-                hidedVideo.removeEventListener('seeked', seekedListener)
+    // const seekedListener = () => {
+    //     let caller = 'hidedVideo';
+    //     if (activeGeneratorHided) {
+    //         generateThumbnail(stepHided, caller);
+    //         stepHided += n;
+    //         //console.log(stepHided);
+    //         //renderFirst();
+    //         if (stepHided <= hidedVideo.duration && stepHided <= maxTime) {
+    //             hidedVideo.currentTime = stepHided;
+    //             //console.log(this.currentTime)
+    //         } else {
+    //             activeGeneratorHided = false;
+    //             //console.log('1')
+    //             sceneArr.forEach((scene) => {
+    //                 if (scene.image) {
+    //                     output.querySelectorAll('div').forEach((el) => {
+    //                         if (el.getAttribute('time') == scene.time && !el.querySelector('img')) {
+    //                             el.append(scene.image);
+    //                         }
+    //                     })
+    //                 }
+    //             })
+    //             hidedVideo.removeEventListener('seeked', seekedListener)
+    //         }
+    //     }
+    // }
+    //
+    // const startHidedVideo = (startTime) => {
+    //     maxTime = startTime + 5;
+    //     hidedVideo.currentTime = startTime;
+    //     if (startTime >= 2) {
+    //         stepHided = startTime - 2;
+    //     }
+    //     else if (startTime === 1.75) {
+    //         stepHided = startTime - 1.75;
+    //     }
+    //     else if (startTime === 1.50) {
+    //         stepHided = startTime - 1.50;
+    //     }
+    //     else if (startTime === 1.25) {
+    //         stepHided = startTime - 1.25;
+    //     }
+    //     else if (startTime === 1) {
+    //         stepHided = startTime - 1;
+    //     }
+    //     else if (startTime === 0.75) {
+    //         stepHided = startTime - 0.75;
+    //     }
+    //     else if (startTime === 0.5) {
+    //         stepHided = startTime - 0.5;
+    //     }
+    //     else if (startTime === 0.25) {
+    //         stepHided = startTime - 0.25;
+    //     }
+    //     else if (startTime === 0) {
+    //         stepHided = startTime;
+    //     }
+    //     //stepHided = startTime;
+    //     //console.log(`startTime ${startTime}, maxTime ${maxTime}`)
+    //     hidedVideo.addEventListener('seeked', seekedListener);
+    //
+    //
+    // }
+
+
+
+
+
+
+
+
+        // const lazySeekedListener = () => {
+        //     console.log(lazyVideo.currentTime);
+        //     let caller = 'lazyVideo';
+        //     if (activeGeneratorLazy) {
+        //         generateThumbnail(lazyStepHided, caller);
+        //         lazyStepHided += n;
+        //         if (lazyStepHided <= lazyVideo.duration && lazyStepHided <= maxTime) {
+        //             lazyVideo.currentTime = lazyStepHided;
+        //         } else {
+        //             activeGeneratorLazy = false;
+        //             lazyVideo.removeEventListener('seeked', lazySeekedListener)
+        //         }
+        //     }
+        // }
+    // let scrolling = false;
+    //
+    // output.addEventListener('scroll', () => {
+    //     scrolling = true;
+    // })
+    //
+    // setInterval(() => {
+    //     if (scrolling) {
+    //         scrolling = false;
+    //         console.log('scroll')
+    //
+    //
+    //
+    //
+    //     }
+    // },1000);
+
+
+    const startSeekedVideoListening = () => {
+        let cached = null
+        const scrollListener = (event) => {
+            if (!cached) {
+                setTimeout(() => {
+                    console.log('scroll')
+                    // function isScrolledIntoView(el) {
+                    //     let percentVisible = 0.75;
+                    //     let elemLeft = el.getBoundingClientRect().left;
+                    //     let elemRight = el.getBoundingClientRect().right;
+                    //     let elemWidth = el.getBoundingClientRect().width;
+                    //     let overhang = elemWidth * (1 - percentVisible);
+                    //     let isVisible = (elemLeft >= -overhang) && (elemRight <= output.clientWidth + overhang);
+                    //     return isVisible;
+                    // }
+                    // output.querySelectorAll('div').forEach((div) => {
+                    //     if (isScrolledIntoView(div)) {
+                    //         console.log(div);
+                    //     }
+                    // })
+                    cached = null
+                }, 500)
             }
+            cached = event
         }
-    }
-
-    const startHidedVideo = (startTime) => {
-        maxTime = startTime + 5;
-        hidedVideo.currentTime = startTime;
-        if (startTime >= 2) {
-            stepHided = startTime - 2;
-        }
-        else if (startTime === 1.75) {
-            stepHided = startTime - 1.75;
-        }
-        else if (startTime === 1.50) {
-            stepHided = startTime - 1.50;
-        }
-        else if (startTime === 1.25) {
-            stepHided = startTime - 1.25;
-        }
-        else if (startTime === 1) {
-            stepHided = startTime - 1;
-        }
-        else if (startTime === 0.75) {
-            stepHided = startTime - 0.75;
-        }
-        else if (startTime === 0.5) {
-            stepHided = startTime - 0.5;
-        }
-        else if (startTime === 0.25) {
-            stepHided = startTime - 0.25;
-        }
-        else if (startTime === 0) {
-            stepHided = startTime;
-        }
-        //stepHided = startTime;
-        //console.log(`startTime ${startTime}, maxTime ${maxTime}`)
-        hidedVideo.addEventListener('seeked', seekedListener);
-
-
-    }
-    const startLazyLoad = (e) => {
-
-        let counter = 0;
-        const counterUpper = () => {
-                counter += 1;
-        }
-
-        let imagesArr = output.querySelectorAll('img');
-        // for (let i = counter; i === counter; i += 3) {
-        //
-        //     counter = i;
-        // }
-        // console.log(counter);
-
-        // const checkImage = () => {
-        //     if (sceneArr[counter].image) {
-        //         console.log(counter);
-        //         // fillFirstOutput(sceneArr[counter].time)
-        //         //console.log(sceneArr[counter]);
-        //         counterUpper();
-        //         checkImage();
-        //         //console.log(counter);
-        //     } else if (!sceneArr[counter].image){
-        //         fillFirstOutput(sceneArr[counter].time)
-        //         counterUpper();
-        //         //console.log(`добавили + 1 к шагу ${counter}`);
-        //     }
-        //     else if (i <= sceneArr.length) {
-        //         return
-        //     }
-        // }
-        // checkImage();
-
-        // const imageLoad = () => {
-        //     if (counter < sceneArr.length) {
-        //         fillFirstOutput(sceneArr[counter].time)
-        //         counter += 1;
-        //         console.log(sceneArr[counter]);
-        //     }
-        //     else {
-        //         console.log('clearinterval')
-        //             clearInterval(startTimeout);
-        //     }
-        // }
-
-        // const imageLoad = () => {
-        //     // sceneArr.some((scene) => {
-        //     //     if (!scene.image) {
-        //     //         //fillFirstOutput(scene.time);
-        //     //         console.log(scene);
-        //     //
-        //     //     }
-        //     // })
-        //
-        //         sceneArr.every(function(element) {
-        //         fillFirstOutput(element.time)
-        //         if (element.image) return false
-        //         else return true
-        //     })
-        // }
-
-
-
-
-        // let startTimeout =
-        //     setInterval(() => {
-        //         console.log('wait');
-        //         imageLoad();
-        //         //checkImage();
-        //     }, 1000);
-        //     //clearStartTimeout()
-
-
-
-        // const clearStartTimeout = () => {
-        //     console.log('stop timeout')
-        //     clearInterval(startTimeout);
-        //
-        //         startTimeout =
-        //             setInterval(() => {
-        //                 console.log('wait more');
-        //                 //imageLoad();
-        //             }, 2000);
-        //
-        // }
-
-        // if (counter >= sceneArr.length) {
-        //     console.log('clearinterval')
-        //     clearInterval(startTimeout);
-        // }
-
-
-
-        //document.querySelector('.navigation-container').addEventListener('click', clearStartTimeout )
-
-
-        let newCounter = 0;
-        //Работающий способ
-        const lazyLoad = (startTime) => {
-            // activeGeneratorHided = true;
-            // maxTime = startTime + 3;
-            // hidedVideo.currentTime = startTime;
-            // stepHided = 0;
-            // //stepHided = startTime;
-            // console.log(`startTime ${startTime}, maxTime ${maxTime}`)
-            // hidedVideo.addEventListener('seeked', seekedListener);
-            // newCounter += 3;
-            //раскомментить то, что выше, чтобы заработало с багами.
-
-
-            activeGeneratorLazy = true;
-            maxTime = startTime + 4;
-            lazyStepHided = startTime;
-            lazyVideo.currentTime = startTime;
-            lazyVideo.addEventListener('seeked', lazySeekedListener);
-            newCounter += 4;
-
-
-        }
-
-        const lazySeekedListener = () => {
-            console.log(lazyVideo.currentTime);
-            //console.log('lazystart');
-            let caller = 'lazyVideo';
-            if (activeGeneratorLazy) {
-                generateThumbnail(lazyStepHided, caller);
-                lazyStepHided += n;
-                //console.log(stepHided);
-                //renderFirst();
-                if (lazyStepHided <= lazyVideo.duration && lazyStepHided <= maxTime) {
-                    lazyVideo.currentTime = lazyStepHided;
-                    //console.log(this.currentTime)
-                } else {
-                    activeGeneratorLazy = false;
-                    //console.log('1')
-                    sortArrByTime(sceneArr);
-                    sceneArr.forEach((scene) => {
-                        if (scene.image) {
-                            output.querySelectorAll('div').forEach((el) => {
-                                if (el.getAttribute('time') == scene.time && !el.querySelector('img')) {
-                                    el.append(scene.image);
-                                    //console.log(scene)
-                                }
-                            })
-                        }
-                    })
-                    lazyVideo.removeEventListener('seeked', lazySeekedListener)
-                }
-            }
-        }
-
-
-
-
-        //lazyLoad(newCounter);
-        // console.log(newCounter);
-        // console.log(sceneArr.length);
-
-
-        let startTimeout =
-            setInterval(() => {
-                if (newCounter <= sceneArr[sceneArr.length - 1].time) {
-                    //console.log(newCounter);
-                    //console.log('wait');
-                    lazyLoad(newCounter)
-                }
-                //checkImage();
-            }, 3000);
-        document.addEventListener('click', () => {
-            clearInterval(startTimeout);
-            console.log('break');
-            startTimeout =
-                setInterval(() => {
-                    if (newCounter <= sceneArr[sceneArr.length - 1].time) {
-                        //console.log(newCounter);
-                        //console.log('wait');
-                        lazyLoad(newCounter)
-                    }
-                    //checkImage();
-                }, 3000);
-        })
-
+        output.removeEventListener('scroll', scrollListener);
+        output.addEventListener('scroll', scrollListener);
     }
 
 
-    setTimeout(startLazyLoad, 2000)
 }
 
 
