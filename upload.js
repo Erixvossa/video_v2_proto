@@ -339,8 +339,7 @@ const startEditor = () => {
         document.querySelector('.hided-video').prepend(hidedVideo);
         video.removeEventListener('loadeddata', loadedDataListener);
 
-        lazyVideo = video.cloneNode(true);
-        document.querySelector('.lazy-video').prepend(lazyVideo);
+
     }
 
     video.addEventListener('loadeddata', loadedDataListener);
@@ -567,7 +566,7 @@ const startEditor = () => {
     let starterReady = true;
 
     function isScrolledIntoView(el) {
-        let percentVisible = 0.75;
+        let percentVisible = 0.1;
         let elemLeft = el.getBoundingClientRect().left;
         let elemRight = el.getBoundingClientRect().right;
         let elemWidth = el.getBoundingClientRect().width;
@@ -581,7 +580,7 @@ const startEditor = () => {
 
 
     function generateSceneHided(scaleFactor) {
-        console.log(new Date().toLocaleTimeString() + 'начало фотки и рендеринга')
+        //console.log(new Date().toLocaleTimeString() + 'начало фотки и рендеринга')
         //console.log(i, caller)
         if (scaleFactor == null) {
             scaleFactor = 0.125;
@@ -609,8 +608,8 @@ const startEditor = () => {
 
         if (!sceneArr[i / n].image) {
             sceneArr[i / n].image = image;
-            console.log(new Date().toLocaleTimeString() + 'сцену добавили в массив');
-            console.log(sceneArr[i / n]);
+            //console.log(new Date().toLocaleTimeString() + 'сцену добавили в массив');
+            //console.log(sceneArr[i / n]);
         }
         //console.log(sceneArr[i / n]);
 
@@ -619,38 +618,33 @@ const startEditor = () => {
                 output.querySelectorAll('div').forEach((el) => {
                     if (el.getAttribute('time') == scene.time && !el.querySelector('img')) {
                         el.append(scene.image);
-                        console.log(new Date().toLocaleTimeString() + 'отрендерили на странице сцену');
+                        //console.log(new Date().toLocaleTimeString() + 'отрендерили на странице сцену');
                     }
                 })
             }
         })
         busy = false;
+        starterReady = true;
         //queueArr.shift();
         //console.log(queueArr);
         //console.log(new Date().toLocaleTimeString() + 'сцена сфоткана, добавлена в массив и отрендерена')
     }
     let busy = false;
-
+    //let starterReady = true;
     let stepHided = queueArr[0];
     const starter = () => {
-        //console.log('произошел запуск');
-
-
-        stepHided = queueArr[1];
-        queueArr.shift();
-        // if we are not past end, seek to next interval
-        if (queueArr.length !== 0) {
-            hidedVideo.currentTime = stepHided;
+        if (starterReady) {
+            starterReady = false;
+            //console.log('произошел запуск');
+            stepHided = queueArr.shift();
             //queueArr.shift();
+            if (queueArr.length !== 0) {
+                hidedVideo.currentTime = stepHided;
+            }
         }
-
-
+        else return
             //console.log(new Date().toLocaleTimeString() + 'Запускатель отработал с флагом свободен')
-
             //console.log(queueArr)
-
-
-
     }
 
 
@@ -666,7 +660,7 @@ const startEditor = () => {
         sceneArr.forEach((scene) => {
             queueArr.push(scene.time)
         })
-        console.log(queueArr)
+        //console.log(queueArr)
 
 
 
@@ -686,19 +680,24 @@ const startEditor = () => {
 
 
 
-        let cached = null
+        let cached = null;
         const scrollListener = (event) => {
             if (!cached) {
                 setTimeout(() => {
+                    //let test = [];
                     output.querySelectorAll('div').forEach((div) => {
+
                         if (isScrolledIntoView(div)) {
                             if (!div.querySelector('img')) {
-                                //console.log(div.getAttribute('time'));
+                                console.log(div.getAttribute('time'));
+                                //test.push(div.getAttribute('time'))
                                 queueAdder(div.getAttribute('time'));
                             }
                         }
+                        //console.log(test)
                     })
                     cached = null
+
                 }, 500)
             }
             cached = event
