@@ -564,34 +564,120 @@ const startEditor = () => {
     //
     //     }
     // },1000);
+    let queueArr = []
 
+    function generateScene(scaleFactor) {
+        //console.log(i, caller)
+        if (scaleFactor == null) {
+            scaleFactor = 0.125;
+        }
+        let i = hidedVideo.currentTime;
+
+        var w = video.videoWidth * scaleFactor;
+        var h = video.videoHeight * scaleFactor;
+
+        //generate thumbnail URL data
+        let thecanvas = document.createElement('canvas');
+        thecanvas.width = w;
+        // для прокрутки верхнего ряда
+        imageWidth = w;
+
+        thecanvas.height = h;
+        var context = thecanvas.getContext('2d');
+        context.drawImage(hidedVideo, 0, 0, w, h);
+
+        var dataURL = thecanvas.toDataURL();
+        //create img
+        const image = document.createElement('img');
+        image.setAttribute('src', dataURL);
+        image.setAttribute('time', i);
+
+        output.querySelectorAll('div').forEach((div) => {
+            if (div.getAttribute('time') == i) {
+                div.prepend(image);
+            }
+        } )
+
+        // sceneArr.forEach((scene) => {
+        //     if (scene.time === i && !scene.image) {
+        //         scene.image = image;
+        //         //console.log(scene, caller)
+        //     }
+        // })
+        // sortArrByTime(sceneArr);
+        // //console.log(sceneArr)
+    }
+
+    const hidedVideoSeekedListener = () => {
+        generateScene(hidedVideo.currentTime)
+        queueArr.shift();
+        console.log(queueArr);
+        starterReady = true;
+    }
+
+
+
+
+
+
+
+    function isScrolledIntoView(el) {
+        let percentVisible = 0.75;
+        let elemLeft = el.getBoundingClientRect().left;
+        let elemRight = el.getBoundingClientRect().right;
+        let elemWidth = el.getBoundingClientRect().width;
+        let overhang = elemWidth * (1 - percentVisible);
+        let isVisible = (elemLeft >= -overhang) && (elemRight <= output.clientWidth + overhang);
+        return isVisible;
+    }
+
+    let starterReady = true;
 
     const startSeekedVideoListening = () => {
+
+        hidedVideo.addEventListener('seeked', hidedVideoSeekedListener);
+
+        const starter = () => {
+            if (starterReady) {
+                starterReady = false;
+                hidedVideo.currentTime = queueArr[0];
+
+            }
+            else return
+        }
+
+
+
+
+        const queueAdder = (time) => {
+            queueArr.unshift(time);
+            console.log(queueArr)
+            starter()
+        }
+
+
+
         let cached = null
         const scrollListener = (event) => {
             if (!cached) {
                 setTimeout(() => {
-                    console.log('scroll')
-                    // function isScrolledIntoView(el) {
-                    //     let percentVisible = 0.75;
-                    //     let elemLeft = el.getBoundingClientRect().left;
-                    //     let elemRight = el.getBoundingClientRect().right;
-                    //     let elemWidth = el.getBoundingClientRect().width;
-                    //     let overhang = elemWidth * (1 - percentVisible);
-                    //     let isVisible = (elemLeft >= -overhang) && (elemRight <= output.clientWidth + overhang);
-                    //     return isVisible;
-                    // }
-                    // output.querySelectorAll('div').forEach((div) => {
-                    //     if (isScrolledIntoView(div)) {
-                    //         console.log(div);
-                    //     }
-                    // })
+                    output.querySelectorAll('div').forEach((div) => {
+                        if (isScrolledIntoView(div)) {
+                            if (div.querySelector('img')) {
+
+                            }
+                            else {
+                                console.log('пусто');
+                                queueAdder(div.getAttribute('time'));
+                            }
+                        }
+                    })
                     cached = null
                 }, 500)
             }
             cached = event
         }
-        output.removeEventListener('scroll', scrollListener);
+        //output.removeEventListener('scroll', scrollListener);
         output.addEventListener('scroll', scrollListener);
     }
 
