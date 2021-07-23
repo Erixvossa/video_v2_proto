@@ -564,9 +564,24 @@ const startEditor = () => {
     //
     //     }
     // },1000);
+    let starterReady = true;
+
+    function isScrolledIntoView(el) {
+        let percentVisible = 0.75;
+        let elemLeft = el.getBoundingClientRect().left;
+        let elemRight = el.getBoundingClientRect().right;
+        let elemWidth = el.getBoundingClientRect().width;
+        let overhang = elemWidth * (1 - percentVisible);
+        let isVisible = (elemLeft >= -overhang) && (elemRight <= output.clientWidth + overhang);
+        return isVisible;
+    }
+
+
     let queueArr = []
 
-    function generateScene(scaleFactor) {
+
+    function generateSceneHided(scaleFactor) {
+        console.log(new Date().toLocaleTimeString() + 'начало фотки и рендеринга')
         //console.log(i, caller)
         if (scaleFactor == null) {
             scaleFactor = 0.125;
@@ -592,67 +607,81 @@ const startEditor = () => {
         image.setAttribute('src', dataURL);
         image.setAttribute('time', i);
 
-        output.querySelectorAll('div').forEach((div) => {
-            if (div.getAttribute('time') == i) {
-                div.prepend(image);
+        if (!sceneArr[i / n].image) {
+            sceneArr[i / n].image = image;
+            console.log(new Date().toLocaleTimeString() + 'сцену добавили в массив');
+            console.log(sceneArr[i / n]);
+        }
+        //console.log(sceneArr[i / n]);
+
+        sceneArr.forEach((scene) => {
+            if (scene.image) {
+                output.querySelectorAll('div').forEach((el) => {
+                    if (el.getAttribute('time') == scene.time && !el.querySelector('img')) {
+                        el.append(scene.image);
+                        console.log(new Date().toLocaleTimeString() + 'отрендерили на странице сцену');
+                    }
+                })
             }
-        } )
-
-        // sceneArr.forEach((scene) => {
-        //     if (scene.time === i && !scene.image) {
-        //         scene.image = image;
-        //         //console.log(scene, caller)
-        //     }
-        // })
-        // sortArrByTime(sceneArr);
-        // //console.log(sceneArr)
+        })
+        busy = false;
+        //queueArr.shift();
+        //console.log(queueArr);
+        //console.log(new Date().toLocaleTimeString() + 'сцена сфоткана, добавлена в массив и отрендерена')
     }
+    let busy = false;
 
-    const hidedVideoSeekedListener = () => {
-        generateScene(hidedVideo.currentTime)
+    let stepHided = queueArr[0];
+    const starter = () => {
+        //console.log('произошел запуск');
+
+
+        stepHided = queueArr[1];
         queueArr.shift();
-        console.log(queueArr);
-        starterReady = true;
-    }
-
-
-
-
-
-
-
-    function isScrolledIntoView(el) {
-        let percentVisible = 0.75;
-        let elemLeft = el.getBoundingClientRect().left;
-        let elemRight = el.getBoundingClientRect().right;
-        let elemWidth = el.getBoundingClientRect().width;
-        let overhang = elemWidth * (1 - percentVisible);
-        let isVisible = (elemLeft >= -overhang) && (elemRight <= output.clientWidth + overhang);
-        return isVisible;
-    }
-
-    let starterReady = true;
-
-    const startSeekedVideoListening = () => {
-
-        hidedVideo.addEventListener('seeked', hidedVideoSeekedListener);
-
-        const starter = () => {
-            if (starterReady) {
-                starterReady = false;
-                hidedVideo.currentTime = queueArr[0];
-
-            }
-            else return
+        // if we are not past end, seek to next interval
+        if (queueArr.length !== 0) {
+            hidedVideo.currentTime = stepHided;
+            //queueArr.shift();
         }
 
 
+            //console.log(new Date().toLocaleTimeString() + 'Запускатель отработал с флагом свободен')
 
+            //console.log(queueArr)
+
+
+
+    }
+
+
+    const hidedVideoSeekedListener = () => {
+        //console.log('перемотали');
+        //busy = true;
+        generateSceneHided();
+        starter();
+        //console.log(new Date().toLocaleTimeString() + 'событие seeked случилось');
+    }
+
+    const startSeekedVideoListening = () => {
+        sceneArr.forEach((scene) => {
+            queueArr.push(scene.time)
+        })
+        console.log(queueArr)
+
+
+
+        hidedVideo.addEventListener('seeked', hidedVideoSeekedListener);
+
+        hidedVideoSeekedListener();
 
         const queueAdder = (time) => {
-            queueArr.unshift(time);
-            console.log(queueArr)
-            starter()
+            if (!queueArr.includes(time)) {
+                queueArr.unshift(time);
+            }
+            //console.log(queueArr)
+            //console.log(new Date().toLocaleTimeString() + 'наполнятель очереди отработал');
+            //starter();
+            //console.log(queueArr)
         }
 
 
@@ -663,11 +692,8 @@ const startEditor = () => {
                 setTimeout(() => {
                     output.querySelectorAll('div').forEach((div) => {
                         if (isScrolledIntoView(div)) {
-                            if (div.querySelector('img')) {
-
-                            }
-                            else {
-                                console.log('пусто');
+                            if (!div.querySelector('img')) {
+                                //console.log(div.getAttribute('time'));
                                 queueAdder(div.getAttribute('time'));
                             }
                         }
