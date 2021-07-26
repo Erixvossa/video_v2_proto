@@ -1,6 +1,6 @@
-import {input, blur, video, videoSource, popup, output, fastOutput, videoHeight} from './src/variablex.js';
+import {input, blur, video, videoSource, popup, output, fastOutput, videoHeight, sceneList} from './src/variablex.js';
 
-import { sortArrByTime, captureCoordsStart, captureCoordsEndFlag, captureCoordsStartFlag, setCaptureCoordsEndFlag, setcaptureCoordsStartFlag } from './src/utils.js';
+import { sortArrByTime, sortArrByTimeSmallToBig, captureCoordsStart, captureCoordsEndFlag, captureCoordsStartFlag, setCaptureCoordsEndFlag, setcaptureCoordsStartFlag } from './src/utils.js';
 
 //Массив всех сцен для фронта
 export let sceneArr = [];
@@ -86,12 +86,16 @@ const generateScene = (sceneName) => {
 
 const renderScenes = () => {
 
+
+
     const sceneSelector = document.querySelector('.scene-selector');
     sceneSelector.innerHTML = '';
 
     const sceneList = document.querySelector('.scene-list');
     sceneList.innerHTML = '';
 
+    console.log('архив отсортирован');
+    sortArrByTimeSmallToBig(sceneArrToBack);
 
     sceneArrToBack.forEach((scene) => {
         const sceneSelectorElement = document.createElement('div');
@@ -170,7 +174,13 @@ input.addEventListener('change', function() {
     const reader = new FileReader();
 
     reader.onload = function (e) {
+        console.log('reader-onload');
+        if (video.querySelector('source')) {
+            video.innerHTML = '';
+        }
         videoSource.setAttribute('src', e.target.result);
+
+
         //videoSource.setAttribute('src', 'https://appstorespy.com/s/ftue/blured.mp4');
         video.appendChild(videoSource);
         startEditor();
@@ -187,6 +197,7 @@ const startEditor = () => {
     console.log('editor is started');
     sceneArr = [];
     sceneArrToBack = [];
+    sceneList.innerHTML = '';
     output.innerHTML = '';
     fastOutput.innerHTML = '';
     document.querySelector('.inaccurate-output').innerHTML = '';
@@ -503,6 +514,7 @@ const startEditor = () => {
         generateSceneHided();
         starter();
         //console.log(new Date().toLocaleTimeString() + 'событие seeked случилось');
+
     }
 
     const startSeekedVideoListening = () => {
@@ -512,7 +524,7 @@ const startEditor = () => {
         //console.log(queueArr)
 
 
-
+        //hidedVideo.removeEventListener('seeked', hidedVideoSeekedListener);
         hidedVideo.addEventListener('seeked', hidedVideoSeekedListener);
 
         hidedVideoSeekedListener();
@@ -555,7 +567,15 @@ const startEditor = () => {
 
 
 }
+const testFuncEx = () => {
+    console.log('event')
+    startEditor();
+    video.removeEventListener('loadeddata', testFuncEx);
 
+}
+
+video.addEventListener('loadeddata', testFuncEx);
+//startEditor();
 
 
 

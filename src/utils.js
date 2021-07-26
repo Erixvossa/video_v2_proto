@@ -32,6 +32,10 @@ export const sortArrByTime = (arr) => {
     arr.sort((a, b) => a.time > b.time ? 1 : -1);
 }
 
+export const sortArrByTimeSmallToBig = (arr) => {
+    arr.sort((a, b) => a.time < b.time ? 1 : -1);
+}
+
 export const captureCoordsStart = (e) => {
     let x;
     let y;
