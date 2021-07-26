@@ -199,13 +199,6 @@ const startEditor = () => {
     video.load();
 
 
-    // const fillFirstOutput = (sceneTime) => {
-    //     //console.log(sceneTime);
-    //     activeGeneratorHided = true;
-    //     startHidedVideo(sceneTime);
-    //     //console.log(sceneArr);
-    // }
-
 
     const addListeners = () => {
         const navigation = document.querySelectorAll('.navigation');
@@ -227,15 +220,10 @@ const startEditor = () => {
                     const width = targetWidth;
                     document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
 
-                    //let timeToSend = sceneTime - 0;
-                    //fillFirstOutput(timeToSend);
-
 
                 } else if (el.parentElement === document.querySelector('.output')) {
 
                 }
-                //let timeToSend = sceneTime - 0;
-                //fillFirstOutput(timeToSend);
             }
             el.removeEventListener('click', doALotOf);
             el.addEventListener('click', doALotOf);
@@ -264,19 +252,6 @@ const startEditor = () => {
             output.append(sceneDiv);
 
 
-            // if (scene.image) {
-            //     scene.image.classList.add('scene');
-            //     scene.image.classList.add('navigation');
-            //     scene.image.setAttribute('time', scene.time);
-            //     scene.image.addEventListener('click', () => {
-            //         video.currentTime = scene.time;
-            //         popup.classList.add('popup_show');
-            //     })
-            //     const sceneDiv = document.createElement('div');
-            //     output.append(sceneDiv);
-            //     //generatePopup(sceneDiv, scene.time);
-            //     sceneDiv.prepend(scene.image);
-            // }
         })
     }
 
@@ -439,130 +414,9 @@ const startEditor = () => {
         }
     });
 
-    // video.addEventListener('play', () => {
-    //
-    //     fillFirstOutput(Math.round(video.currentTime))
-    //     video._updateInterval = setInterval(() => {
-    //         fillFirstOutput(Math.round(video.currentTime))
-    //         //console.log(Math.round(video.currentTime))
-    //         // do what you need
-    //     }, 2000);
-    // }, true);
-    //
-    // video.addEventListener('pause', () => clearInterval(video._updateInterval), true);
 
     video.addEventListener('timeupdate', syncVideoToScene);
 
-
-
-
-    // let lazyStepHided = 0;
-    // let activeGeneratorLazy = true;
-    // let activeGeneratorHided = true;
-    // let stepHided = 0;
-    // let maxTime = 1;
-
-    // const seekedListener = () => {
-    //     let caller = 'hidedVideo';
-    //     if (activeGeneratorHided) {
-    //         generateThumbnail(stepHided, caller);
-    //         stepHided += n;
-    //         //console.log(stepHided);
-    //         //renderFirst();
-    //         if (stepHided <= hidedVideo.duration && stepHided <= maxTime) {
-    //             hidedVideo.currentTime = stepHided;
-    //             //console.log(this.currentTime)
-    //         } else {
-    //             activeGeneratorHided = false;
-    //             //console.log('1')
-    //             sceneArr.forEach((scene) => {
-    //                 if (scene.image) {
-    //                     output.querySelectorAll('div').forEach((el) => {
-    //                         if (el.getAttribute('time') == scene.time && !el.querySelector('img')) {
-    //                             el.append(scene.image);
-    //                         }
-    //                     })
-    //                 }
-    //             })
-    //             hidedVideo.removeEventListener('seeked', seekedListener)
-    //         }
-    //     }
-    // }
-    //
-    // const startHidedVideo = (startTime) => {
-    //     maxTime = startTime + 5;
-    //     hidedVideo.currentTime = startTime;
-    //     if (startTime >= 2) {
-    //         stepHided = startTime - 2;
-    //     }
-    //     else if (startTime === 1.75) {
-    //         stepHided = startTime - 1.75;
-    //     }
-    //     else if (startTime === 1.50) {
-    //         stepHided = startTime - 1.50;
-    //     }
-    //     else if (startTime === 1.25) {
-    //         stepHided = startTime - 1.25;
-    //     }
-    //     else if (startTime === 1) {
-    //         stepHided = startTime - 1;
-    //     }
-    //     else if (startTime === 0.75) {
-    //         stepHided = startTime - 0.75;
-    //     }
-    //     else if (startTime === 0.5) {
-    //         stepHided = startTime - 0.5;
-    //     }
-    //     else if (startTime === 0.25) {
-    //         stepHided = startTime - 0.25;
-    //     }
-    //     else if (startTime === 0) {
-    //         stepHided = startTime;
-    //     }
-    //     //stepHided = startTime;
-    //     //console.log(`startTime ${startTime}, maxTime ${maxTime}`)
-    //     hidedVideo.addEventListener('seeked', seekedListener);
-    //
-    //
-    // }
-
-
-
-
-
-
-
-
-        // const lazySeekedListener = () => {
-        //     console.log(lazyVideo.currentTime);
-        //     let caller = 'lazyVideo';
-        //     if (activeGeneratorLazy) {
-        //         generateThumbnail(lazyStepHided, caller);
-        //         lazyStepHided += n;
-        //         if (lazyStepHided <= lazyVideo.duration && lazyStepHided <= maxTime) {
-        //             lazyVideo.currentTime = lazyStepHided;
-        //         } else {
-        //             activeGeneratorLazy = false;
-        //             lazyVideo.removeEventListener('seeked', lazySeekedListener)
-        //         }
-        //     }
-        // }
-    // let scrolling = false;
-    //
-    // output.addEventListener('scroll', () => {
-    //     scrolling = true;
-    // })
-    //
-    // setInterval(() => {
-    //     if (scrolling) {
-    //         scrolling = false;
-    //         console.log('scroll')
-    //
-    //
-    //
-    //
-    //     }
-    // },1000);
     let starterReady = true;
 
     function isScrolledIntoView(el) {
@@ -581,7 +435,6 @@ const startEditor = () => {
 
     function generateSceneHided(scaleFactor) {
         //console.log(new Date().toLocaleTimeString() + 'начало фотки и рендеринга')
-        //console.log(i, caller)
         if (scaleFactor == null) {
             scaleFactor = 0.125;
         }
@@ -590,10 +443,8 @@ const startEditor = () => {
         var w = video.videoWidth * scaleFactor;
         var h = video.videoHeight * scaleFactor;
 
-        //generate thumbnail URL data
         let thecanvas = document.createElement('canvas');
         thecanvas.width = w;
-        // для прокрутки верхнего ряда
         imageWidth = w;
 
         thecanvas.height = h;
@@ -611,7 +462,6 @@ const startEditor = () => {
             //console.log(new Date().toLocaleTimeString() + 'сцену добавили в массив');
             //console.log(sceneArr[i / n]);
         }
-        //console.log(sceneArr[i / n]);
 
         sceneArr.forEach((scene) => {
             if (scene.image) {
@@ -630,7 +480,6 @@ const startEditor = () => {
         //console.log(new Date().toLocaleTimeString() + 'сцена сфоткана, добавлена в массив и отрендерена')
     }
     let busy = false;
-    //let starterReady = true;
     let stepHided = queueArr[0];
     const starter = () => {
         if (starterReady) {
@@ -674,8 +523,6 @@ const startEditor = () => {
             }
             //console.log(queueArr)
             //console.log(new Date().toLocaleTimeString() + 'наполнятель очереди отработал');
-            //starter();
-            //console.log(queueArr)
         }
 
 
@@ -710,7 +557,6 @@ const startEditor = () => {
 }
 
 
-// startLazyLoad();
 
 
 
