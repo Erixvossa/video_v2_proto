@@ -1,6 +1,6 @@
 import {input, blur, video, videoSource, popup, output, fastOutput, videoHeight, sceneList} from './src/variablex.js';
 
-import { sortArrByTime, captureCoordsStart, captureCoordsEndFlag, captureCoordsStartFlag, setCaptureCoordsEndFlag, setcaptureCoordsStartFlag } from './src/utils.js';
+import { sortArrByTime, sortArrByTimeSmallToBig, captureCoordsStart, captureCoordsEndFlag, captureCoordsStartFlag, setCaptureCoordsEndFlag, setcaptureCoordsStartFlag } from './src/utils.js';
 
 //Массив всех сцен для фронта
 export let sceneArr = [];
@@ -86,12 +86,16 @@ const generateScene = (sceneName) => {
 
 const renderScenes = () => {
 
+
+
     const sceneSelector = document.querySelector('.scene-selector');
     sceneSelector.innerHTML = '';
 
     const sceneList = document.querySelector('.scene-list');
     sceneList.innerHTML = '';
 
+    console.log('архив отсортирован');
+    sortArrByTimeSmallToBig(sceneArrToBack);
 
     sceneArrToBack.forEach((scene) => {
         const sceneSelectorElement = document.createElement('div');
