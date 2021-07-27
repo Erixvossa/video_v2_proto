@@ -14,5 +14,5 @@ export const blur = document.querySelector('.blur');
 
 
 //Высота видео в половину высоты окна браузера
-export const videoHeight = (document.documentElement.clientHeight / 2) + "";
+export const videoHeight = (document.documentElement.clientHeight * 0.75) + "";
 

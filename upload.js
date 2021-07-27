@@ -2,13 +2,15 @@ import {input, blur, video, videoSource, popup, output, fastOutput, videoHeight,
 
 import { sortArrByTime, sortArrByTimeSmallToBig, captureCoordsStart, captureCoordsEndFlag, captureCoordsStartFlag, setCaptureCoordsEndFlag, setcaptureCoordsStartFlag } from './src/utils.js';
 
+
+
 //Массив всех сцен для фронта
 export let sceneArr = [];
 
 //Массив сцена для передачи на бэк
 export let sceneArrToBack = [];
 
-
+let widthForScroll;
 let imageWidth;
 
 video.setAttribute('height', videoHeight);
@@ -110,7 +112,8 @@ const renderScenes = () => {
         sceneSelectorElementLabelSpan.classList.add('scene-selector__span');
 
         sceneSelector.prepend(sceneSelectorElement);
-        sceneSelectorElementName.placeholder = 'Введите название сцены';
+        sceneSelectorElementName.classList.add('scene-selector__input');
+        sceneSelectorElementName.placeholder = 'Scene name';
         sceneSelectorElementName.value = scene.name;
         sceneSelectorElementName.addEventListener('change', () => {
             scene.name = sceneSelectorElementName.value;
@@ -227,7 +230,11 @@ const startEditor = () => {
                 if (el.parentElement !== document.querySelector('.output')) {
 
                     //console.log(sceneTime);
-                    const targetWidth = (((sceneTime / 0.25) - 5) * imageWidth);
+                    let newWidth = document.querySelector('.output').querySelector('.scene').clientWidth;
+                    console.log(document.querySelector('.output').querySelector('.scene').clientWidth);
+                    console.log(document.querySelector('.output').scrollWidth);
+                    const targetWidth = (((sceneTime / 0.25) - 1) * newWidth);
+
                     const width = targetWidth;
                     document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
 
@@ -244,8 +251,8 @@ const startEditor = () => {
     const renderFirst = () => {
         output.innerHTML = "";
         //console.log(sceneArr)
-        let w = (video.videoWidth * 0.125) + 'px';
-        let h = (video.videoHeight * 0.125) + 'px';
+        let w = (video.videoWidth * 0.3) + 'px';
+        let h = (video.videoHeight * 0.3) + 'px';
         sceneArr.forEach((scene) => {
             const sceneDiv = document.createElement('div');
             const sceneP = document.createElement('p');
@@ -282,9 +289,11 @@ const startEditor = () => {
 
     const renderThird = () => {
         //console.log(sceneArr);
+        const inaccurateOutput = document.querySelector('.inaccurate-output');
+        inaccurateOutput.innerHTML = '';
         for (let i = 0; i < sceneArr.length; i = i + Math.round(sceneArr.length / screenWidth)) {
             //console.log(i);
-            const inaccurateOutput = document.querySelector('.inaccurate-output');
+
             const innacurateDiv = document.createElement('div');
             innacurateDiv.classList.add('inaccurate-output_div');
             const clonedImg = sceneArr[i].image.cloneNode(true);
@@ -301,10 +310,38 @@ const startEditor = () => {
         }
     }
 
+    const renderAlternateThird = () => {
+        // console.log('counter')
+        const screenWidthInPx = document.querySelector('.page').clientWidth;
+        const inaccurateOutput = document.querySelector('.inaccurate-output');
+        let maxWidth = screenWidthInPx / (Math.round((sceneArr[sceneArr.length - 1].time) / (((sceneArr.length / screenWidth)) * n)));
+        inaccurateOutput.innerHTML = '';
+        sceneArr.forEach((scene) => {
+            if (scene.image) {
+                //console.log(scene)
+                const innacurateDiv = document.createElement('div');
+                innacurateDiv.classList.add('inaccurate-output_div');
+                const clonedImg = scene.image.cloneNode(true);
+                innacurateDiv.prepend(clonedImg);
+                // console.log(Math.round((sceneArr[sceneArr.length - 1].time) / (((sceneArr.length / screenWidth)) * n)));
+                // console.log(screenWidthInPx / (Math.round((sceneArr[sceneArr.length - 1].time) / (((sceneArr.length / screenWidth)) * n))));
+
+                innacurateDiv.style.maxWidth = maxWidth + 'px';
+                innacurateDiv.querySelector('img').classList.add('width');
+                innacurateDiv.querySelector('img').classList.add('navigation');
+                inaccurateOutput.append(innacurateDiv);
+                innacurateDiv.addEventListener('click', () => {
+                    video.currentTime = scene.time;
+                })
+            }
+        })
+    }
 
 
     let i = 0;
     const loadedDataListener = () => {
+        //console.log('массив sceneArr наполнился временами');
+        //console.log(sceneArr);
         video.currentTime = i;
         videoLength = video.duration;
         let scenesCount = Math.round(videoLength / n);
@@ -324,8 +361,6 @@ const startEditor = () => {
         hidedVideo = video.cloneNode(true);
         document.querySelector('.hided-video').prepend(hidedVideo);
         video.removeEventListener('loadeddata', loadedDataListener);
-
-
     }
 
     video.addEventListener('loadeddata', loadedDataListener);
@@ -333,7 +368,7 @@ const startEditor = () => {
     function generateThumbnail(i, caller, scaleFactor) {
         //console.log(i, caller)
         if (scaleFactor == null) {
-            scaleFactor = 0.125;
+            scaleFactor = 0.25;
         }
 
         var w = video.videoWidth * scaleFactor;
@@ -384,7 +419,11 @@ const startEditor = () => {
                 scene.classList.add('scene_active');
                 if (scene.parentElement === document.querySelector('.output')) {
 
-                    const targetWidth = (((scene.getAttribute('time') / 0.25) - 5) * imageWidth);
+                    let newWidth = document.querySelector('.output').querySelector('.scene').clientWidth;
+                    //console.log(document.querySelector('.output').querySelector('.scene').clientWidth);
+                    //console.log(document.querySelector('.output').scrollWidth);
+                    const targetWidth = (((scene.getAttribute('time') / 0.25) - 1) * newWidth);
+
                     const width = targetWidth;
                     document.querySelector('.output').scrollTo({left: width, top: 0, behavior: 'smooth'});
                 }
@@ -406,6 +445,7 @@ const startEditor = () => {
             // now video has seeked and current frames will show
             // at the time as we expect
             generateThumbnail(step, caller);
+            renderAlternateThird();
             // when frame is captured, increase here by 5 seconds
             //i += 0.25;
             step += (Math.round(sceneArr.length / screenWidth)) * n;
@@ -417,7 +457,8 @@ const startEditor = () => {
                 activeGenerator = false;
                 renderFirst();
                 renderSecond();
-                renderThird();
+                //renderThird();
+
                 addListeners();
                 video.currentTime = 0;
                 startSeekedVideoListening();
@@ -447,12 +488,13 @@ const startEditor = () => {
     function generateSceneHided(scaleFactor) {
         //console.log(new Date().toLocaleTimeString() + 'начало фотки и рендеринга')
         if (scaleFactor == null) {
-            scaleFactor = 0.125;
+            scaleFactor = 1;
         }
         let i = hidedVideo.currentTime;
 
         var w = video.videoWidth * scaleFactor;
         var h = video.videoHeight * scaleFactor;
+        widthForScroll = w;
 
         let thecanvas = document.createElement('canvas');
         thecanvas.width = w;
@@ -473,12 +515,30 @@ const startEditor = () => {
             //console.log(new Date().toLocaleTimeString() + 'сцену добавили в массив');
             //console.log(sceneArr[i / n]);
         }
+        // else if (sceneArr[i / n].image !== image) {
+        //     sceneArr[i / n].image = image;
+        // }
+        else {
+            //console.log(sceneArr[i / n]);
+            sceneArr[i / n].image = image;
+        }
+        // console.log(sceneArr[i / n].image);
 
         sceneArr.forEach((scene) => {
             if (scene.image) {
                 output.querySelectorAll('div').forEach((el) => {
-                    if (el.getAttribute('time') == scene.time && !el.querySelector('img')) {
-                        el.append(scene.image);
+                    // if (el.getAttribute('time') == scene.time && !el.querySelector('img')) {
+                    if (el.getAttribute('time') == scene.time) {
+                        if (el.querySelector('img') !== scene.image) {
+                            //console.log(el);
+                            el.innerHTML = '';
+                            el.append(scene.image);
+                            const sceneP = document.createElement('p');
+                            sceneP.textContent = `${scene.time}`;
+                            el.prepend(sceneP);
+                        }
+                        //el.innerHTML = '';
+                        //el.append(scene.image);
                         //console.log(new Date().toLocaleTimeString() + 'отрендерили на странице сцену');
                     }
                 })
@@ -495,9 +555,9 @@ const startEditor = () => {
     const starter = () => {
         if (starterReady) {
             starterReady = false;
-            //console.log('произошел запуск');
-            stepHided = queueArr.shift();
-            //queueArr.shift();
+                //console.log('произошел запуск');
+                stepHided = queueArr.shift();
+                //queueArr.shift();
             if (queueArr.length !== 0) {
                 hidedVideo.currentTime = stepHided;
             }
@@ -548,7 +608,7 @@ const startEditor = () => {
 
                         if (isScrolledIntoView(div)) {
                             if (!div.querySelector('img')) {
-                                console.log(div.getAttribute('time'));
+                                // console.log(div.getAttribute('time'));
                                 //test.push(div.getAttribute('time'))
                                 queueAdder(div.getAttribute('time'));
                             }
@@ -568,15 +628,14 @@ const startEditor = () => {
 
 }
 const testFuncEx = () => {
-    console.log('event')
+    //console.log('canplay')
     startEditor();
-    video.removeEventListener('loadeddata', testFuncEx);
+    video.removeEventListener('canplay', testFuncEx);
 
 }
 
-video.addEventListener('loadeddata', testFuncEx);
-//startEditor();
-
-
+video.load()
+video.addEventListener('canplay', testFuncEx);
+// //startEditor();
 
 
