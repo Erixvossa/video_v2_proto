@@ -36,24 +36,46 @@ const removeControls = (e) => {
 let pressed = false;
 let moved = false;
 
-
+let preventDefToggled = false;
+const preventDef = (e) => {
+    e.preventDefault()
+}
 
 video.addEventListener('mousedown', (e) => {
     pressed = true;
+    moved = false;
     removeControls(e);
     setcaptureCoordsStartFlag(true);
+    if (preventDefToggled) {
+        video.removeEventListener('click', preventDef);
+        preventDefToggled = false;
+    }
+
 
 });
 video.addEventListener('mousemove', (e) => {
     moved = true;
     removeControls(e);
+    if (pressed && moved && !preventDefToggled) {
+        video.addEventListener('click', preventDef);
+        preventDefToggled = true;
+    }
 });
+
+
+
 document.addEventListener('mouseup', (e) => {
     if (moved && pressed) {
+        setcaptureCoordsStartFlag(false);
         setCaptureCoordsEndFlag(true);
         e.preventDefault();
-        console.log('отпустили.')
+        //console.log(e);
+        console.log('отпустили.');
+        //video.addEventListener('click', preventDef);
+        //video.removeEventListener('click', preventDef);
     }
+
+
     moved = false;
     pressed = false;
     removeControls(e);
