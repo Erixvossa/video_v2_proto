@@ -1,6 +1,6 @@
 import {input, blur, video, videoSource, popup, output, fastOutput, videoHeight, sceneList} from './src/variablex.js';
 
-import { sortArrByTime, sortArrByTimeSmallToBig, captureCoordsStart, captureCoordsEndFlag, captureCoordsStartFlag, setCaptureCoordsEndFlag, setcaptureCoordsStartFlag } from './src/utils.js';
+import { sortArrByTime, sortArrByTimeSmallToBig, captureCoordsStart, captureCoordsEndFlag, captureCoordsStartFlag, setCaptureCoordsEndFlag, setcaptureCoordsStartFlag, getBlurCoords } from './src/utils.js';
 
 
 
@@ -69,8 +69,15 @@ document.addEventListener('mouseup', (e) => {
         setcaptureCoordsStartFlag(false);
         setCaptureCoordsEndFlag(true);
         e.preventDefault();
-        //console.log(e);
-        console.log('отпустили.');
+        console.log('отпустили');
+        generateScene();
+        sceneArrToBack.forEach((scene) => {
+            if (scene.time === video.currentTime) {
+                getBlurCoords(scene);
+                console.log(scene);
+            }
+        })
+        //console.log('отпустили.');
         //video.addEventListener('click', preventDef);
         //video.removeEventListener('click', preventDef);
     }
@@ -79,6 +86,8 @@ document.addEventListener('mouseup', (e) => {
     moved = false;
     pressed = false;
     removeControls(e);
+
+
 });
 
 
@@ -102,7 +111,17 @@ const generateScene = (sceneName) => {
     scene.time = video.currentTime;
     scene.name = sceneName;
 
-    sceneArrToBack.push(scene);
+    let sceneFounded = false;
+    sceneArrToBack.forEach((scene) => {
+        if (scene.time === video.currentTime) {
+            sceneFounded = true;
+        }
+    })
+
+    if (!sceneFounded) {
+        sceneArrToBack.push(scene);
+    }
+
 
     sortArrByTime(sceneArrToBack);
     console.log(sceneArrToBack);
@@ -253,8 +272,8 @@ const startEditor = () => {
 
                     //console.log(sceneTime);
                     let newWidth = document.querySelector('.output').querySelector('.scene').clientWidth;
-                    console.log(document.querySelector('.output').querySelector('.scene').clientWidth);
-                    console.log(document.querySelector('.output').scrollWidth);
+                    //console.log(document.querySelector('.output').querySelector('.scene').clientWidth);
+                    //console.log(document.querySelector('.output').scrollWidth);
                     const targetWidth = (((sceneTime / 0.25) - 1) * newWidth);
 
                     const width = targetWidth;
@@ -649,15 +668,15 @@ const startEditor = () => {
 
 
 }
-const testFuncEx = () => {
+const defaultVideoStart = () => {
     //console.log('canplay')
     startEditor();
-    video.removeEventListener('canplay', testFuncEx);
+    video.removeEventListener('canplay', defaultVideoStart);
 
 }
 
 video.load()
-video.addEventListener('canplay', testFuncEx);
+video.addEventListener('canplay', defaultVideoStart);
 // //startEditor();
 
 

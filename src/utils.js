@@ -13,7 +13,11 @@ export let lastCoord = {
     y: 0
 };
 
-
+export const getBlurCoords = (obj) => {
+  obj.firstCoord = firstCoord;
+  obj.lastCoord = lastCoord;
+  //console.log(obj);
+}
 
 
 
@@ -51,12 +55,14 @@ export const captureCoordsStart = (e) => {
         x = firstCoord.x;
         y = firstCoord.y;
         //console.log(`Начало выделения ${firstCoord.x}, ${firstCoord.y}`);
+        //console.log(firstCoord);
     }
     else if (captureCoordsEndFlag) {
         captureCoordsEndFlag = false;
         lastCoord.x = e.offsetX;
         lastCoord.y = e.offsetY;
         //console.log(`Конец выделения ${lastCoord.x}, ${lastCoord.y}`);
+        //console.log(lastCoord)
     }
     let middleX = e.offsetX;
     let middleY = e.offsetY;
