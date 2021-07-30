@@ -110,8 +110,16 @@ document.addEventListener('mouseup', (e) => {
     pressed = false;
     removeControls(e);
 
-
 });
+
+
+document.addEventListener('click', (e) => {
+    if (e.target !== video) {
+        blurPopup.classList.remove('blur-popup_show')
+    }
+})
+
+
 
 
 
@@ -729,7 +737,15 @@ const startEditor = () => {
                             scene.endTime = div.getAttribute('time') - 0;
                         }
                         else if (div.getAttribute('time') < scene.endTime && div.getAttribute('time') > scene.startTime) {
-                            scene.endTime = div.getAttribute('time') - 0;
+                            //scene.endTime = div.getAttribute('time') - 0;
+                            console.log(scene.endTime - (div.getAttribute('time') - 0));
+                            console.log((scene.endTime - scene.startTime) / 2);
+                            if ((scene.endTime - (div.getAttribute('time') - 0)) < ((scene.endTime - scene.startTime) / 2)) {
+                                scene.endTime = div.getAttribute('time') - 0;
+                            }
+                            else {
+                                scene.startTime = div.getAttribute('time') - 0;
+                            }
                         }
                         highlightBlurContainer(container);
 
