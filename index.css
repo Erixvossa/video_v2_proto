@@ -262,3 +262,66 @@ video {
     flex-direction: column;
     justify-content: flex-end;
 }
+
+.blur-popup {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-bottom: 19px;
+    margin-left: 10px;
+    visibility: hidden;
+    /*width: 165px;*/
+    min-width: 17vw;
+}
+
+.blur-popup_show {
+    visibility: visible;
+}
+
+.blur-popup__title {
+    font-size: initial;
+    font-weight: normal;
+    margin-block: 0;
+    height: 22px;
+}
+
+.blur-popup__label {
+    display: flex;
+}
+
+.blur-popup__input {
+    width: 100%;
+}
+
+.blur-popup__button {
+    background: #4285f4;
+    border: 1px solid gray;
+    border-radius: 2px;
+    margin-top: 18px;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+    line-height: 20px;
+}
+
+.blur-output {
+    display: flex;
+}
+
+.blur-div {
+    background-color: green;
+    flex-grow: 1;
+}
+
+.blur-div_active {
+    background-color: purple;
+}
+
+.blur-div:hover {
+    background-color: red;
+}
+
+.blur-div::before {
+    content: ".";
+    visibility: hidden;
+}
