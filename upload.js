@@ -738,8 +738,8 @@ const startEditor = () => {
                         }
                         else if (div.getAttribute('time') < scene.endTime && div.getAttribute('time') > scene.startTime) {
                             //scene.endTime = div.getAttribute('time') - 0;
-                            console.log(scene.endTime - (div.getAttribute('time') - 0));
-                            console.log((scene.endTime - scene.startTime) / 2);
+                            //console.log(scene.endTime - (div.getAttribute('time') - 0));
+                            //console.log((scene.endTime - scene.startTime) / 2);
                             if ((scene.endTime - (div.getAttribute('time') - 0)) < ((scene.endTime - scene.startTime) / 2)) {
                                 scene.endTime = div.getAttribute('time') - 0;
                             }
