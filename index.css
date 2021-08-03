@@ -15,6 +15,7 @@ p {
 
 .main-container {
     display: flex;
+    flex-direction: row;
 }
 
 .video-container {
@@ -30,6 +31,8 @@ video {
 .output {
     display: flex;
     overflow-x: auto;
+    height: fit-content;
+    overflow-y: hidden;
 }
 
 .output::before {
@@ -94,7 +97,17 @@ video {
 
 .scene-selector {
     padding-top: 22px;
-    margin-left: 22px;
+    margin-left: 10px;
+
+    display: flex;
+    flex-direction: column;
+    max-height: 50vh;
+    overflow-y: scroll;
+    /*width: 15%;*/
+}
+
+.scene-selector::-webkit-scrollbar {
+    display: none;
 }
 
 .scene-selector__scene {
@@ -106,22 +119,29 @@ video {
 }
 
 .scene-selector__span {
-    margin-right: 22px;
-    width: 44px;
+    margin-right: 10px;
+    /*width: 44px;*/
     cursor: pointer;
 }
 
 .scene-selector__label {
     display: flex;
+    justify-content: space-between;
+}
+
+.scene-selector__input {
+    max-width: 65%;
 }
 
 .popup {
     display: flex;
     flex-direction: column;
-    margin-top: auto;
+    margin-top: 10px;
     margin-bottom: 19px;
-    margin-left: 22px;
+    margin-left: 10px;
     visibility: hidden;
+    /*width: 165px;*/
+    min-width: 17vw;
 }
 
 .popup_show {
@@ -132,7 +152,17 @@ video {
     font-size: initial;
     font-weight: normal;
     margin-block: 0;
+    height: 22px;
 }
+
+.popup__label {
+    display: flex;
+}
+
+.popup__input {
+    width: 100%;
+}
+
 
 .scene-list__container {
     margin-left: 2px;
@@ -141,6 +171,9 @@ video {
     flex-direction: column;
     border-radius: 5px;
     height: fit-content;
+    /*overflow: hidden;*/
+    width: 6vw;
+    white-space: nowrap;
 }
 
 .popup__button {
@@ -155,19 +188,22 @@ video {
 }
 
 .scene-list__img {
-    width: auto;
-    height: 25vh;
+    width: 6vw;
+    height: auto;
     border-radius: 5px;
 }
 
 .scene-list {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
-    overflow-y: scroll;
-    height: 51vh;
-    margin-left: 22px;
-    padding-top: 22px;
+    /* flex-wrap: wrap; */
+    /* overflow-y: scroll; */
+    /* height: 51vh; */
+    overflow-x: scroll;
+    /* margin-left: 22px; */
+    /*padding-top: 22px;*/
+    width: 100%;
+    /*height: 26vh;*/
 }
 
 .scene-list__title {
@@ -210,4 +246,82 @@ video {
 .navigation {
     display: flex;
     box-sizing: border-box;
+}
+
+.scene-and-button-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 40%;
+    margin-right: 10px;
+}
+
+.scene-list-and-output-container {
+    display: flex;
+    overflow-x: hidden;
+    /*width: 61%;*/
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.blur-popup {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-bottom: 19px;
+    margin-left: 10px;
+    visibility: hidden;
+    /*width: 165px;*/
+    min-width: 17vw;
+}
+
+.blur-popup_show {
+    visibility: visible;
+}
+
+.blur-popup__title {
+    font-size: initial;
+    font-weight: normal;
+    margin-block: 0;
+    height: 22px;
+}
+
+.blur-popup__label {
+    display: flex;
+}
+
+.blur-popup__input {
+    width: 100%;
+}
+
+.blur-popup__button {
+    background: #4285f4;
+    border: 1px solid gray;
+    border-radius: 2px;
+    margin-top: 18px;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+    line-height: 20px;
+}
+
+.blur-output {
+    display: flex;
+}
+
+.blur-div {
+    background-color: green;
+    flex-grow: 1;
+}
+
+.blur-div_active {
+    background-color: purple;
+}
+
+.blur-div:hover {
+    background-color: red;
+}
+
+.blur-div::before {
+    content: ".";
+    visibility: hidden;
 }
