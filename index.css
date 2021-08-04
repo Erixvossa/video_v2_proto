@@ -161,6 +161,16 @@ video {
 
 .popup__input {
     width: 100%;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    height: 30px;
+    padding: 0 10px 0 10px;
+    background-color: #f1f3f4;
+}
+
+.popup__input:focus {
+    border: 1px solid transparent;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 50%);
 }
 
 
@@ -177,14 +187,39 @@ video {
 }
 
 .popup__button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background: #4285f4;
-    border: 1px solid gray;
     border-radius: 2px;
     margin-top: 18px;
     color: white;
     text-align: center;
     cursor: pointer;
-    line-height: 20px;
+    border: 1px solid transparent;
+    height: 30px;
+    outline: none;
+    font-weight: bold;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.popup__button:hover {
+    border: 1px solid transparent;
+    -webkit-box-shadow: inset 0 2px 0 rgb(0 0 0 / 15%);
+    box-shadow: inset 0 2px 0 rgb(0 0 0 / 15%);
+    background: #3c78dc;
+    background: -webkit-linear-gradient(top,#3c7ae4,#3f76d3);
+}
+
+.popup__button:active {
+    -webkit-box-shadow: inset 0 0 0 1px rgb(255 255 255 / 50%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 50%);
+}
+
+
 }
 
 .scene-list__img {
@@ -291,7 +326,14 @@ video {
 
 .blur-popup__input {
     width: 100%;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    height: 30px;
+    padding: 0 10px 0 10px;
+    background-color: #f1f3f4;
 }
+
+
 
 .blur-popup__button {
     background: #4285f4;
